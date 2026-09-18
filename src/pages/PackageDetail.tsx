@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react";
 import { Link, Navigate, useNavigate, useParams } from "react-router";
 import { motion } from "framer-motion";
-import { useMutation } from "convex/react";
+import { useRestMutation } from "@/api/client";
 import { toast } from "sonner";
 import {
   ArrowLeft,
@@ -17,7 +17,6 @@ import {
   Sparkles,
   Users,
 } from "lucide-react";
-import { api } from "@/convex/_generated/api";
 import { PriceInline } from "@/lib/currency";
 import { openMillyAi } from "@/components/AiAssistant";
 import { AuthGateDialog } from "@/components/AuthGateDialog";
@@ -73,7 +72,7 @@ export default function PackageDetail() {
   const tour = slug ? findTour(slug) : undefined;
   const navigate = useNavigate();
   const { isAuthenticated, user } = useAuth();
-  const createBooking = useMutation(api.bookings.create);
+  const createBooking = useRestMutation("bookings", "create");
 
   const [startDate, setStartDate] = useState("2026-10-03");
   const [guests, setGuests] = useState(2);
@@ -167,7 +166,7 @@ export default function PackageDetail() {
               loading="eager"
               decoding="async"
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-[#0B1220]/80 via-transparent" />
+            <div className="absolute inset-0 bg-gradient-to-t from-[#17231d]/80 via-transparent" />
             <div className="absolute inset-x-0 bottom-0 p-5 text-white">
               <div className="flex flex-wrap items-center gap-2">
                 {tour.badge && (

@@ -2,7 +2,7 @@ import { CITY_SPOTS, TOUR_PACKAGES, type CitySpot } from "../data/catalog";
 
 /**
  * AI Planner uchun umumiy tiplar va qoidaga asoslangan zaxira generatori.
- * Bu modul ham frontendda (chat oqimi, natijani ko'rsatish), ham Convex
+ * Bu modul ham frontendda (chat oqimi, natijani ko'rsatish), ham backendda
  * action ichida (AI javob bermasa) ishlatiladi.
  */
 

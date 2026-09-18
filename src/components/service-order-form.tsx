@@ -1,10 +1,9 @@
 import { useState } from "react";
 import { useNavigate } from "react-router";
-import { useMutation } from "convex/react";
+import { useRestMutation } from "@/api/client";
 import { toast } from "sonner";
 import { CalendarDays, Loader2, Send } from "lucide-react";
 
-import { api } from "@/convex/_generated/api";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { AuthGateDialog } from "@/components/AuthGateDialog";
@@ -35,7 +34,7 @@ export function ServiceOrderForm({
 }) {
   const navigate = useNavigate();
   const { isAuthenticated } = useAuth();
-  const request = useMutation(api.bookings.requestService);
+  const request = useRestMutation("bookings", "requestService");
   const [open, setOpen] = useState(defaultOpen);
   const [gateOpen, setGateOpen] = useState(false);
   const [sending, setSending] = useState(false);

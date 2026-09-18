@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 import { Link, Navigate, useSearchParams } from "react-router";
-import { useQuery } from "convex/react";
+import { useRestQuery } from "@/api/client";
 import { motion } from "framer-motion";
 import {
   ArrowRight,
@@ -20,7 +20,6 @@ import {
   UtensilsCrossed,
 } from "lucide-react";
 
-import { api } from "@/convex/_generated/api";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Container, PageHero } from "@/components/site";
@@ -69,7 +68,7 @@ export default function Services() {
   const legacyDirection = params.get("direction") ?? "";
   const city = params.get("city") ?? "";
 
-  const providers = useQuery(api.providers.publicList, {}) as ProviderRow[] | undefined;
+  const providers = useRestQuery<ProviderRow[]>("providers", "publicList", {});
 
   const rows = useMemo(() => {
     const list = providers ?? [];
@@ -161,7 +160,7 @@ export default function Services() {
                       decoding="async"
                       className="aspect-[16/9] w-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-[#0B1220]/75 via-transparent" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-[#17231d]/75 via-transparent" />
                     <span className="absolute bottom-3 left-3 inline-flex items-center gap-1.5 rounded-full bg-white/15 px-2.5 py-1 text-[11px] font-semibold text-white backdrop-blur-sm">
                       <Icon className="size-3.5 text-gold" aria-hidden="true" />
                       {page.label}

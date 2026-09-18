@@ -1,4 +1,4 @@
-import { BadgePercent, Building2, Castle, Landmark, Route, Sparkles, Sunrise } from "lucide-react";
+import { BadgePercent, Sparkles } from "lucide-react";
 import { cardPhoto, IMG } from "@/data/catalog";
 import { cn } from "@/lib/utils";
 
@@ -12,7 +12,7 @@ import { cn } from "@/lib/utils";
  *
  * Masalan: "Naqshli + Firuza" yoki "Shahar + Samarqand (Registon)".
  *
- * Ro'yxat `src/convex/discountCards.ts → DESIGN_IDS` bilan bir xil bo'lishi
+ * Ro'yxat serverdagi chegirma karta dizayn identifikatorlari bilan bir xil bo'lishi
  * kerak — aks holda tanlangan dizayn saqlanmaydi (fallback: registon).
  */
 

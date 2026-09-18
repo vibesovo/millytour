@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router";
 import { motion } from "framer-motion";
-import { useMutation } from "convex/react";
+import { useRestMutation } from "@/api/client";
 import { toast } from "sonner";
 import {
   ArrowRight,
@@ -14,7 +14,6 @@ import {
   Users,
   X,
 } from "lucide-react";
-import { api } from "@/convex/_generated/api";
 import { AuthGateDialog } from "@/components/AuthGateDialog";
 import { Input } from "@/components/ui/input";
 import { useAuth } from "@/hooks/use-auth";
@@ -77,7 +76,7 @@ function ServiceRequestPanel({
   const meta = SERVICE_META[service];
   const { isAuthenticated } = useAuth();
   const navigate = useNavigate();
-  const request = useMutation(api.bookings.requestService);
+  const request = useRestMutation("bookings", "requestService");
   const [form, setForm] = useState({
     city: defaultCity,
     startDate: "2026-10-03",
@@ -297,7 +296,7 @@ export default function Packages() {
               className={cn(
                 "rounded-full border px-3.5 py-1.5 text-xs font-semibold transition-colors",
                 category === cat.id
-                  ? "border-transparent bg-white text-[#0B1220]"
+                  ? "border-transparent bg-white text-[#17231d]"
                   : "border-white/20 bg-white/10 text-white/85 hover:bg-white/20",
               )}
             >

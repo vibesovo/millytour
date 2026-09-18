@@ -16,6 +16,7 @@ import {
   Search,
   ShieldCheck,
   Sparkles,
+  Star,
   Store,
   Ticket,
   UserRound,
@@ -43,8 +44,10 @@ import {
   PRODUCTS,
   TOUR_CATEGORIES,
   TOUR_PACKAGES,
+  TESTIMONIALS,
   partnerBotLink,
   type CategoryId,
+  IMG,
 } from "@/data/catalog";
 
 const blurFade = {
@@ -56,54 +59,38 @@ const blurFade = {
 
 /* ----------------------------------- hero ---------------------------------- */
 
-/** Registon silueti — fotosurat o'rniga nozik vektor fon. */
-function SkylineSilhouette() {
-  return (
-    <svg
-      aria-hidden="true"
-      viewBox="0 0 1200 220"
-      className="absolute inset-x-0 bottom-0 h-40 w-full text-white/10 sm:h-52"
-      preserveAspectRatio="none"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.5"
-    >
-      <path d="M0 220v-40h120l30-26h60l30 26h150l40-34h90l40 34h170l34-30h80l34 30h160l44-38h96l44 38h120v40" />
-      <path d="M180 154c0-30 24-54 54-54s54 24 54 54" />
-      <path d="M560 156c0-34 27-62 60-62s60 28 60 62" />
-      <path d="M900 150c0-28 22-50 50-50s50 22 50 50" />
-      <path d="M234 100V74m0-26v-8m386 78V92m0-30V54" />
-    </svg>
-  );
-}
-
 function Hero() {
   return (
-    <section className="relative overflow-hidden bg-[#0B1220] text-white">
-      <div className="absolute inset-0 bg-gradient-to-br from-[#0B1220] via-[#12306B] to-[#1E40AF]" />
-      <PatternOverlay tone="gold" opacityClass="opacity-[0.05]" />
-      <SkylineSilhouette />
+    <section className="relative min-h-[520px] overflow-hidden bg-[#12306b] text-white">
+      <img
+        src={IMG.registan}
+        alt="Samarqand Registoni, O'zbekiston"
+        className="absolute inset-0 size-full object-cover object-center"
+      />
+      <div className="absolute inset-0 bg-[#0c2d4a]/55" />
+      <PatternOverlay tone="gold" opacityClass="opacity-[0.06]" />
 
-      <Container className="relative flex flex-col items-center pt-16 pb-32 text-center sm:pt-20 lg:pb-40">
+      <Container className="relative flex min-h-[520px] items-center pb-28 pt-16 sm:pt-20 lg:pb-36">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-          className="flex max-w-3xl flex-col items-center"
+          className="flex max-w-xl flex-col items-start text-left"
         >
           <span className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-4 py-1.5 text-xs font-semibold tracking-wide text-white/90 backdrop-blur-sm">
             <Sparkles className="size-3.5 text-gold" aria-hidden="true" />
             O'zbekiston — Buyuk Ipak yo'lining yuragi
           </span>
-          <h1 className="mt-6 text-[32px] leading-[40px] font-bold tracking-tight sm:text-[46px] sm:leading-[54px]">
-            O'zbekiston bo'ylab shaxsiy sayohatingizni yarating
+          <h1 className="mt-6 max-w-2xl text-[38px] leading-[42px] font-extrabold tracking-tight sm:text-[58px] sm:leading-[60px]">
+            O'zbekistonni kashf eting,
+            <span className="block font-serif font-normal italic text-coral"> xotiralar yarating</span>
           </h1>
-          <p className="mt-4 max-w-2xl text-base leading-6 text-white/75 sm:text-lg sm:leading-7">
+          <p className="mt-5 max-w-lg text-base leading-6 text-white/85 sm:text-lg sm:leading-7">
             Tasdiqlangan tur paketlar, Milly AI tuzgan shaxsiy dastur va mahalliy mutaxassislar
             (gid, transfer, mehmonxona, tarjimon, fotograf) — bitta joyda.
           </p>
-          <div className="mt-8 flex w-full flex-col justify-center gap-3 sm:w-auto sm:flex-row">
-            <Button size="lg" className="px-8" asChild>
+          <div className="mt-8 flex w-full flex-col gap-3 sm:w-auto sm:flex-row">
+            <Button size="lg" className="bg-coral px-8 text-coral-foreground hover:bg-coral/90" asChild>
               <Link to="/paketlar">Tur paketlarni ko'rish</Link>
             </Button>
             <Button
@@ -127,6 +114,18 @@ function Hero() {
               </li>
             ))}
           </ul>
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0, x: 24 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.7, delay: 0.15 }}
+          className="absolute right-6 top-1/2 hidden -translate-y-1/2 rounded-[22px] border border-white/45 bg-white/95 p-5 text-foreground shadow-2xl lg:block xl:right-14"
+        >
+          <p className="text-xs font-bold tracking-wide text-coral uppercase">Maxsus taklif</p>
+          <p className="mt-2 text-3xl font-extrabold text-primary">30% OFF</p>
+          <p className="mt-1 max-w-[150px] text-xs leading-5 text-muted-foreground">Milly Card bilan barcha bronlarda tejang</p>
+          <Link to="/paketlar" className="mt-4 inline-flex text-xs font-bold text-primary">Takliflarni ko'rish <ArrowRight className="ml-1 size-3.5" /></Link>
         </motion.div>
       </Container>
     </section>
@@ -564,9 +563,9 @@ function PartnerCta() {
       <Container>
         <motion.div
           {...blurFade}
-          className="relative overflow-hidden rounded-3xl border bg-[#0B1220] px-6 py-10 text-white sm:px-10"
+          className="relative overflow-hidden rounded-3xl border bg-[#17231d] px-6 py-10 text-white sm:px-10"
         >
-          <div className="absolute inset-0 bg-gradient-to-br from-[#0B1220] via-[#12306B] to-[#1E40AF]" />
+          <div className="absolute inset-0 bg-gradient-to-br from-[#17231d] via-[#2f4b3d] to-[#587b58]" />
           <div className="absolute inset-0 bg-[radial-gradient(60%_70%_at_85%_0%,rgba(245,158,11,0.25),transparent_60%)]" />
           <PatternOverlay tone="gold" opacityClass="opacity-[0.05]" />
           <div className="relative grid items-center gap-10 lg:grid-cols-[1.3fr_1fr]">
@@ -620,6 +619,55 @@ function PartnerCta() {
   );
 }
 
+function TestimonialsBand() {
+  return (
+    <section className="border-y bg-[#f7f9fc] py-14 lg:py-20" aria-label="Mijozlar fikri">
+      <Container>
+        <motion.div {...blurFade} className="flex flex-wrap items-end justify-between gap-6">
+          <SectionHeading
+            eyebrow="Mijozlar fikri"
+            title="Safaringizni biz bilan boshlaganlar nima deydi?"
+            description="Har bir fikr real tur, real mutaxassis va real taassurotga bog'langan. Sizning sayohatingiz ham shu yerda boshlanadi."
+          />
+          <div className="inline-flex items-center gap-2 rounded-2xl border border-gold/20 bg-gold/10 px-4 py-3">
+            <Star className="size-5 fill-gold text-gold" aria-hidden="true" />
+            <span className="text-sm font-bold text-foreground">4.9 / 5</span>
+            <span className="text-xs text-muted-foreground">mijozlar bahosi</span>
+          </div>
+        </motion.div>
+
+        <div className="mt-10 grid gap-4 md:grid-cols-3">
+          {TESTIMONIALS.slice(0, 3).map((review, index) => (
+            <motion.article
+              key={review.id}
+              {...blurFade}
+              transition={{ ...blurFade.transition, delay: index * 0.08 }}
+              className="relative flex h-full flex-col rounded-[24px] border border-border/70 bg-white p-5 shadow-[0_10px_30px_rgba(15,23,42,0.05)]"
+            >
+              <span className="absolute top-4 right-5 text-4xl leading-none font-serif text-primary/15">“</span>
+              <div className="flex items-center gap-1" aria-label={`${review.rating} yulduzdan ${review.rating}`}>
+                {Array.from({ length: 5 }).map((_, star) => (
+                  <Star key={star} className="size-3.5 fill-gold text-gold" aria-hidden="true" />
+                ))}
+              </div>
+              <p className="mt-4 flex-1 text-[14px] leading-6 text-foreground">{review.text}</p>
+              <div className="mt-5 flex items-center gap-3 border-t border-border/70 pt-4">
+                <span className="grid size-10 place-items-center rounded-full bg-primary/10 text-sm font-bold text-primary">
+                  {review.name.split(" ").map((part) => part[0]).join("").slice(0, 2)}
+                </span>
+                <div className="min-w-0">
+                  <p className="truncate text-sm font-semibold text-foreground">{review.name}</p>
+                  <p className="truncate text-xs text-muted-foreground">{review.country} · {review.tour}</p>
+                </div>
+              </div>
+            </motion.article>
+          ))}
+        </div>
+      </Container>
+    </section>
+  );
+}
+
 /* ----------------------------------- page ---------------------------------- */
 
 export default function Landing() {
@@ -640,6 +688,7 @@ export default function Landing() {
       <ArtisansTeaser />
       <DiscountCardsSection id="chegirma-kartalar" />
       <AiSection />
+      <TestimonialsBand />
       <PartnerCta />
     </>
   );

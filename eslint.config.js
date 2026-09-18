@@ -6,9 +6,7 @@ import tseslint from "typescript-eslint";
 import eslintConfigPrettier from "eslint-config-prettier/flat";
 
 export default tseslint.config(
-  // `src/convex/_generated` is produced by the Convex CLI (`npx convex dev`).
-  // Generated code is not ours to lint.
-  { ignores: ["dist", "src/convex/_generated"] },
+  { ignores: ["dist", "data"] },
   {
     extends: [
       js.configs.recommended,

@@ -1,9 +1,8 @@
 import { useMemo, useState } from "react";
-import { useQuery } from "convex/react";
+import { useRestQuery } from "@/api/client";
 import { motion } from "framer-motion";
 import { toast } from "sonner";
 import { BadgeCheck, Package, ShoppingBag, Sparkles, Store, Truck } from "lucide-react";
-import { api } from "@/convex/_generated/api";
 import { AuthGateDialog } from "@/components/AuthGateDialog";
 import { useAuth } from "@/hooks/use-auth";
 import { Button } from "@/components/ui/button";
@@ -39,7 +38,7 @@ type UnifiedItem = {
 const CATEGORIES = ["Barchasi", "Kulolchilik", "To'qimachilik", "Zargarlik", "Yog'och", "Gilam"] as const;
 
 export default function Marketplace() {
-  const approved = useQuery(api.market.approved) as MarketItem[] | undefined;
+  const approved = useRestQuery<MarketItem[]>("market", "approved");
   const { isAuthenticated } = useAuth();
   const [category, setCategory] = useState<string>("Barchasi");
   const [gateItem, setGateItem] = useState<string | null>(null);

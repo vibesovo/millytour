@@ -40,6 +40,7 @@ import {
 import { MillytourLogo, PatternOverlay } from "@/components/brand";
 import { useAuth } from "@/hooks/use-auth";
 import { cn } from "@/lib/utils";
+import { AuthChoiceDialog } from "@/components/AuthChoiceDialog";
 
 /* ---------------------------------- layout --------------------------------- */
 
@@ -181,7 +182,7 @@ export function SiteHeader() {
   ];
 
   return (
-    <header className="sticky top-0 z-40 border-b bg-background/90 backdrop-blur-md">
+    <header className="sticky top-0 z-40 border-b border-border/70 bg-background/90 pt-[env(safe-area-inset-top)] backdrop-blur-xl">
       <Container className="flex h-14 items-center justify-between gap-4">
         <Link to="/" aria-label="millytour — bosh sahifa" className="shrink-0">
           <MillytourLogo />
@@ -229,9 +230,9 @@ export function SiteHeader() {
             </Button>
           ) : (
             <>
-              <Button variant="ghost" size="sm" className="hidden sm:inline-flex" asChild>
-                <Link to="/auth">{t("nav_signin")}</Link>
-              </Button>
+              <AuthChoiceDialog
+                trigger={<Button variant="ghost" size="sm" className="hidden sm:inline-flex">{t("nav_signin")}</Button>}
+              />
               <Button size="sm" className="hidden sm:inline-flex" asChild>
                 <a href={partnerBotLink()} target="_blank" rel="noreferrer">
                   {t("nav_partners")}
@@ -317,9 +318,9 @@ export function SiteHeader() {
                   </Button>
                 ) : (
                   <>
-                    <Button size="lg" asChild onClick={() => setOpen(false)}>
-                      <Link to="/auth?returnTo=%2Fdashboard">{t("cta_login_register")}</Link>
-                    </Button>
+                    <AuthChoiceDialog
+                      trigger={<Button size="lg" onClick={() => setOpen(false)}>{t("cta_login_register")}</Button>}
+                    />
                     <Button size="lg" variant="outline" asChild onClick={() => setOpen(false)}>
                       <a href={partnerBotLink()} target="_blank" rel="noreferrer">
                         Hamkorlik — mtour_auth_bot
@@ -506,7 +507,7 @@ export function SiteLayout({ children }: { children: React.ReactNode }) {
   return (
     <div className="flex min-h-screen flex-col">
       <SiteHeader />
-      <main key={location.pathname} className="flex-1 pb-20 lg:pb-0">
+      <main key={location.pathname} className="page-enter flex-1 pb-20 lg:pb-0">
         {children}
       </main>
       <SiteFooter />

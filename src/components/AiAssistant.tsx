@@ -1,18 +1,17 @@
 import { useEffect, useState } from "react";
 import { useLocation } from "react-router";
-import { useQuery } from "convex/react";
 import { AnimatePresence, motion } from "framer-motion";
 import { Sparkles, X } from "lucide-react";
-import { api } from "@/convex/_generated/api";
+import { useRestQuery } from "@/api/client";
 import { PlannerChat } from "@/components/planner-chat";
 import { cn } from "@/lib/utils";
 
 /**
- * Holat satri — AI modeli ulanganini ko'rsatadi. Convex javob bermasa yoki
+ * Holat satri — AI modeli ulanganini ko'rsatadi. Backend javob bermasa yoki
  * kalit sozlanmagan bo'lsa "onlayn" deb yozib qo'ymaydi.
  */
 function AiStatusLine({ compact }: { compact?: boolean }) {
-  const status = useQuery(api.aiStatus.status);
+  const status = useRestQuery("aiStatus", "status");
   const ready = status?.ready;
   const dot = ready === undefined ? "bg-white/40" : ready ? "bg-eco" : "bg-amber-400";
   const text =
@@ -97,7 +96,7 @@ export function AiAssistant() {
             exit={{ opacity: 0, y: 16, scale: 0.98 }}
             transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
             aria-label="Milly AI yordamchisi"
-            className="glass-card fixed right-3 bottom-20 z-50 flex h-[min(70vh,520px)] w-[min(92vw,376px)] flex-col overflow-hidden rounded-3xl sm:right-5 sm:bottom-24"
+            className="glass-card fixed right-3 bottom-[calc(5rem+env(safe-area-inset-bottom))] z-50 flex h-[min(70vh,520px)] w-[min(92vw,376px)] flex-col overflow-hidden rounded-3xl sm:right-5 sm:bottom-24"
           >
             <header className="relative flex items-center gap-3 overflow-hidden bg-gradient-to-r from-[#0B1220] via-[#12306B] to-[#1E40AF] px-4 py-3 text-white">
               <span className="grid size-9 shrink-0 place-items-center rounded-xl bg-white/15">
@@ -130,7 +129,7 @@ export function AiAssistant() {
         aria-expanded={open}
         aria-label={open ? "Milly AI yordamchini yopish" : "Milly AI bilan tur dasturi tuzish"}
         className={cn(
-          "press fixed right-4 bottom-4 z-50 inline-flex items-center gap-2 rounded-full bg-gradient-to-br from-[#1E40AF] to-[#12306B] text-white shadow-lifted transition-transform hover:scale-[1.03] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring sm:right-6 sm:bottom-6",
+          "press fixed right-4 bottom-[calc(5rem+env(safe-area-inset-bottom))] z-50 inline-flex items-center gap-2 rounded-full bg-gradient-to-br from-[#1E40AF] to-[#12306B] text-white shadow-lifted transition-transform hover:scale-[1.03] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring sm:right-6 sm:bottom-6",
           open ? "size-12 justify-center px-0" : "h-12 px-4",
         )}
       >

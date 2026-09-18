@@ -3,7 +3,6 @@ import { ArrowRight, Clock, Heart, MapPin, Users } from "lucide-react";
 import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Rating } from "@/components/brand";
 import { PriceInline } from "@/lib/currency";
 import { TOUR_CATEGORIES, type CategoryId, type TourPackage } from "@/data/catalog";
 import { cn } from "@/lib/utils";
@@ -45,7 +44,7 @@ export function CategoryTabs({
               "inline-flex shrink-0 items-center gap-2 rounded-full border px-4 py-2 text-sm font-semibold transition-all focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring",
               tone === "dark"
                 ? active
-                  ? "border-transparent bg-white text-[#0B1220]"
+                  ? "border-transparent bg-white text-[#17231d]"
                   : "border-white/20 bg-white/10 text-white/85 hover:bg-white/20"
                 : active
                   ? "border-primary bg-primary text-primary-foreground shadow-xs"
@@ -90,7 +89,7 @@ export function TourBadge({ badge }: { badge?: TourPackage["badge"] }) {
         "border-0 font-semibold shadow-xs",
         badge === "Best Seller" && "bg-primary text-primary-foreground",
         badge === "Hot Deal" && "bg-gold text-gold-foreground",
-        badge === "New" && "bg-eco text-eco-foreground",
+        badge === "New" && "bg-coral text-coral-foreground",
       )}
     >
       {badge}
@@ -110,7 +109,7 @@ export function TourCard({
   return (
     <article
       className={cn(
-        "group flex h-full flex-col overflow-hidden rounded-2xl border bg-card transition-all duration-300 hover:-translate-y-1 hover:shadow-soft",
+        "group flex h-full flex-col overflow-hidden rounded-[24px] border border-border/70 bg-card transition-all duration-300 hover:-translate-y-1 hover:shadow-soft",
         className,
       )}
     >
@@ -151,7 +150,15 @@ export function TourCard({
             <Clock className="size-4" aria-hidden="true" />
             {tour.days} kun / {tour.nights} kecha
           </span>
-          <Rating value={tour.rating} reviews={tour.reviews} />
+          <span className="inline-flex items-center gap-1.5 rounded-full bg-gold/10 px-2 py-1 text-xs font-bold text-[#8a5a00]">
+            <span className="inline-flex items-center gap-0.5">
+              {Array.from({ length: 5 }).map((_, index) => (
+                <span key={index} className={cn("text-[11px]", index < Math.round(tour.rating) ? "text-gold" : "text-muted-foreground/30")}>★</span>
+              ))}
+            </span>
+            {tour.rating.toFixed(1)}
+            <span className="font-medium text-muted-foreground">({tour.reviews})</span>
+          </span>
         </div>
         <div className="mt-2 flex items-center gap-1.5 text-xs text-muted-foreground">
           <Users className="size-3.5" aria-hidden="true" />

@@ -160,7 +160,7 @@ export function PanelShell({
         <aside className="hidden w-64 shrink-0 lg:block">
           <div className="sticky top-24 flex flex-col gap-4">
             <div className="rounded-2xl border bg-card p-3">{navList}</div>
-            <div className="relative overflow-hidden rounded-2xl bg-[#0B1220] p-4 text-white">
+            <div className="relative overflow-hidden rounded-2xl bg-[#17231d] p-4 text-white">
               <PatternOverlay tone="gold" opacityClass="opacity-[0.08]" />
               <div className="relative">
                 <p className="inline-flex items-center gap-1.5 text-xs font-semibold text-white">

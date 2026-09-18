@@ -1,6 +1,6 @@
 import { Fragment, useMemo, useState } from "react";
 import { Link, Navigate, useSearchParams } from "react-router";
-import { useMutation, useQuery } from "convex/react";
+import { useRestMutation, useRestQuery } from "@/api/client";
 import { toast } from "sonner";
 import {
   ArrowRight,
@@ -22,7 +22,6 @@ import {
   UserRound,
   Wallet,
 } from "lucide-react";
-import { api } from "@/convex/_generated/api";
 import { openMillyAi } from "@/components/AiAssistant";
 import { Button } from "@/components/ui/button";
 import { PanelCard, PanelEmpty, PanelShell, PanelTable, StatCard, StatusBadge } from "@/components/workspace";
@@ -61,9 +60,7 @@ type AssignmentRow = {
  * mehmonxona, tarjimon va fotograf ma'lumotlari (ism, tajriba, reyting, vazifa).
  */
 function BookingSpecialists({ bookingId }: { bookingId: string }) {
-  const rows = useQuery(api.assignments.forBooking, {
-    bookingId: bookingId as never,
-  }) as AssignmentRow[] | undefined;
+  const rows = useRestQuery<AssignmentRow[]>("assignments", "forBooking", { bookingId });
 
   if (rows === undefined) {
     return <p className="px-1 text-[12px] text-muted-foreground">Yuklanmoqda…</p>;
@@ -258,12 +255,12 @@ export default function Dashboard() {
   const [params] = useSearchParams();
   const tab = (params.get("tab") ?? "overview") as TabId;
   const [openBooking, setOpenBooking] = useState<string | null>(null);
-  const data = useQuery(api.bookings.mine);
-  const plans = useQuery(api.plans.mine);
-  const myCard = useQuery(api.discountCards.active);
-  const myReviews = (useQuery(api.reviews.mine) ?? []) as { rating: number }[];
-  const setStatus = useMutation(api.bookings.setStatus);
-  const createLink = useMutation(api.telegram.linkCode);
+  const data = useRestQuery("bookings", "mine");
+  const plans = useRestQuery("plans", "mine");
+  const myCard = useRestQuery("discountCards", "active");
+  const myReviews = (useRestQuery<{ rating: number }[]>("reviews", "mine") ?? []) as { rating: number }[];
+  const setStatus = useRestMutation("bookings", "setStatus");
+  const createLink = useRestMutation("telegram", "linkCode");
   const [linking, setLinking] = useState(false);
 
   const bookings = (data?.bookings ?? []) as unknown as Booking[];

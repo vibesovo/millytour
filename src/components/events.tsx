@@ -1,8 +1,7 @@
 import { Link } from "react-router";
-import { useQuery } from "convex/react";
+import { useRestQuery } from "@/api/client";
 import { motion } from "framer-motion";
 import { CalendarDays, MapPin, Sparkles, Ticket, Users } from "lucide-react";
-import { api } from "@/convex/_generated/api";
 import { Button } from "@/components/ui/button";
 import { Container } from "@/components/site";
 import { cn } from "@/lib/utils";
@@ -56,7 +55,7 @@ export function EventsSection({
   className?: string;
   heading?: boolean;
 }) {
-  const events = useQuery(api.events.list, { limit: 6 }) as EventRow[] | undefined;
+  const events = useRestQuery<EventRow[]>("events", "list", { limit: 6 });
 
   if (!events || events.length === 0) {
     return null;

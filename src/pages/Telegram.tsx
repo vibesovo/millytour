@@ -1,9 +1,8 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router";
-import { useQuery } from "convex/react";
+import { useRestQuery } from "@/api/client";
 import { toast } from "sonner";
 import { Bot, Loader2, Send, ShieldCheck, Sparkles, Smartphone } from "lucide-react";
-import { api } from "@/convex/_generated/api";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Container, PageHero } from "@/components/site";
@@ -22,7 +21,7 @@ type TelegramWebApp = {
  * foydalanuvchi ma'lumotlari ko'rsatiladi va sayt hisobi bir bosishda ulanadi.
  */
 export default function Telegram() {
-  const config = useQuery(api.telegram.config);
+  const config = useRestQuery("telegram", "config");
   const { signIn, isAuthenticated } = useAuth();
   const navigate = useNavigate();
   const [webApp, setWebApp] = useState<TelegramWebApp | null>(() =>

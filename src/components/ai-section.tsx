@@ -72,7 +72,7 @@ export function AiSection({ className, id = "milly-ai" }: { className?: string; 
           {/* Chat qanday ishlashini ko'rsatuvchi mini-markaz */}
           <div className="relative overflow-hidden rounded-2xl border bg-card p-5 shadow-xs">
             <div className="flex items-center gap-3 border-b pb-3">
-              <span className="grid size-9 place-items-center rounded-xl bg-gradient-to-br from-[#1E40AF] to-[#12306B] text-white">
+                  <span className="grid size-9 place-items-center rounded-xl bg-gradient-to-br from-[#587b58] to-[#2f4b3d] text-white">
                 <Sparkles className="size-4 text-gold" aria-hidden="true" />
               </span>
               <div>

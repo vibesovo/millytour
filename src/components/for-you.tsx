@@ -1,9 +1,8 @@
 import { Link } from "react-router";
-import { useQuery } from "convex/react";
+import { useRestQuery } from "@/api/client";
 import { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import { CalendarClock, MapPin, Sparkles, Star, Wallet } from "lucide-react";
-import { api } from "@/convex/_generated/api";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Price } from "@/lib/currency";
@@ -38,10 +37,8 @@ const GUEST_ROWS: RecommendedRow[] = [...TOUR_PACKAGES]
  */
 export function ForYouRow({ className }: { className?: string }) {
   const { isAuthenticated } = useAuth();
-  const recommended = useQuery(api.packages.recommended, { limit: 8 }) as
-    | RecommendedRow[]
-    | undefined;
-  const plans = useQuery(api.plans.mine) as SavedPlan[] | undefined;
+  const recommended = useRestQuery<RecommendedRow[]>("packages", "recommended", { limit: 8 });
+  const plans = useRestQuery<SavedPlan[]>("plans", "mine");
 
   const rows = recommended && recommended.length > 0 ? recommended : GUEST_ROWS;
   const reasonOf = (row: RecommendedRow) => (isAuthenticated ? row.reason : undefined);

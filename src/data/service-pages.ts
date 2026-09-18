@@ -261,7 +261,7 @@ export function findServicePage(slug: string | undefined): ServicePage | undefin
   return SERVICE_PAGES.find((page) => page.slug === slug);
 }
 
-/** Convex `direction` qiymatidan slug'ga (masalan "hotel" → "mehmonxona"). */
+/** Server `direction` qiymatidan slug'ga (masalan "hotel" → "mehmonxona"). */
 export function slugForDirection(direction: Direction): string {
   return SERVICE_PAGES.find((page) => page.direction === direction)?.slug ?? "";
 }

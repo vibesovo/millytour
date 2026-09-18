@@ -32,7 +32,7 @@ function Auth({ redirectAfterAuth }: AuthProps = {}) {
   const [searchParams] = useSearchParams();
   const redirect = resolveRedirectAfterAuth(searchParams.get("returnTo"), redirectAfterAuth);
 
-  const [step, setStep] = useState<"signIn" | { email: string }>("signIn");
+  const [step, setStep] = useState<"signIn" | { email: string; challengeId: string; devCode?: string }>("signIn");
   const [otp, setOtp] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -49,8 +49,8 @@ function Auth({ redirectAfterAuth }: AuthProps = {}) {
     setError(null);
     try {
       const formData = new FormData(event.currentTarget);
-      await signIn("email-otp", formData);
-      setStep({ email: formData.get("email") as string });
+      const result = (await signIn("email-otp", formData)) as { email: string; challengeId: string; devCode?: string };
+      setStep({ email: result.email, challengeId: result.challengeId, devCode: result.devCode });
       setIsLoading(false);
     } catch (error) {
       console.error("Email sign-in error:", error);
@@ -290,6 +290,7 @@ function Auth({ redirectAfterAuth }: AuthProps = {}) {
               </p>
               <form onSubmit={handleOtpSubmit} className="mt-8">
                 <input type="hidden" name="email" value={step.email} />
+                <input type="hidden" name="challengeId" value={step.challengeId} />
                 <input type="hidden" name="code" value={otp} />
                 <div className="flex justify-center">
                   <InputOTP
@@ -327,6 +328,11 @@ function Auth({ redirectAfterAuth }: AuthProps = {}) {
                   )}
                 </Button>
               </form>
+              {step.devCode && (
+                <p className="mt-3 rounded-lg bg-amber-50 px-3 py-2 text-center text-xs text-amber-800">
+                  Lokal test kodi: <strong>{step.devCode}</strong>
+                </p>
+              )}
               <div className="mt-4 text-center">
                 <Button variant="link" onClick={() => setStep("signIn")}>
                   Boshqa emaildan foydalanish

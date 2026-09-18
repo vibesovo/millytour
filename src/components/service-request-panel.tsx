@@ -1,11 +1,10 @@
 import { useState } from "react";
 import { useNavigate } from "react-router";
-import { useMutation } from "convex/react";
+import { useRestMutation } from "@/api/client";
 import { motion } from "framer-motion";
 import { toast } from "sonner";
 import { CalendarDays, Loader2, Send, Users } from "lucide-react";
 
-import { api } from "@/convex/_generated/api";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { AuthGateDialog } from "@/components/AuthGateDialog";
@@ -48,7 +47,7 @@ export function ServiceRequestPanel({
   const rate = RATES[service];
   const { isAuthenticated } = useAuth();
   const navigate = useNavigate();
-  const request = useMutation(api.bookings.requestService);
+  const request = useRestMutation("bookings", "requestService");
 
   const [form, setForm] = useState({
     city: defaultCity as string,

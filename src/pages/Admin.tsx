@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Navigate, useSearchParams } from "react-router";
-import { useAction, useMutation, useQuery } from "convex/react";
+import { useRestAction, useRestMutation, useRestQuery } from "@/api/client";
 import {
   Bar,
   BarChart,
@@ -28,7 +28,6 @@ import {
   Store,
   Users,
 } from "lucide-react";
-import { api } from "@/convex/_generated/api";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -58,8 +57,8 @@ type TabId = (typeof TABS)[number]["id"];
 
 export default function Admin() {
   const { isLoading } = useAuth();
-  const status = useQuery(api.admin.status);
-  const claimAdmin = useMutation(api.admin.claimAdmin);
+  const status = useRestQuery("admin", "status");
+  const claimAdmin = useRestMutation("admin", "claimAdmin");
   const [claiming, setClaiming] = useState(false);
 
   if (isLoading || status === undefined) {
@@ -126,26 +125,26 @@ function AdminPanel() {
   const tab: TabId = TABS.find((t) => t.id === tabParam)?.id ?? "overview";
   const [providerFilter, setProviderFilter] = useState<"all" | "pending" | "approved">("all");
 
-  const overview = useQuery(api.admin.overview);
-  const providers = useQuery(api.providers.list, {});
-  const bookings = useQuery(api.bookings.adminList, {});
-  const payments = useQuery(api.payments.adminList, {});
-  const pendingItems = useQuery(api.market.pending);
-  const leads = useQuery(api.providers.listLeads);
-  const botConfig = useQuery(api.telegram.config);
-  const events = useQuery(api.telegram.events, { limit: 15 });
+  const overview = useRestQuery("admin", "overview");
+  const providers = useRestQuery("providers", "list", {});
+  const bookings = useRestQuery("bookings", "adminList", {});
+  const payments = useRestQuery("payments", "adminList", {});
+  const pendingItems = useRestQuery("market", "pending");
+  const leads = useRestQuery("providers", "listLeads");
+  const botConfig = useRestQuery("telegram", "config");
+  const events = useRestQuery("telegram", "events", { limit: 15 });
 
-  const seedDemo = useMutation(api.admin.seedDemo);
-  const setProviderStatus = useMutation(api.providers.setStatus);
-  const setSubscription = useMutation(api.providers.setSubscription);
-  const setBookingStatus = useMutation(api.bookings.setStatus);
-  const moderate = useMutation(api.market.moderate);
-  const handleLead = useMutation(api.providers.handleLead);
-  const confirmPayment = useMutation(api.payments.confirm);
-  const refundPayment = useMutation(api.payments.refund);
-  const saveBotTokens = useMutation(api.telegram.saveBotTokens);
-  const registerWebhooks = useAction(api.telegram.registerWebhooks);
-  const pollBotUpdates = useAction(api.telegram.pollUpdates);
+  const seedDemo = useRestMutation("admin", "seedDemo");
+  const setProviderStatus = useRestMutation("providers", "setStatus");
+  const setSubscription = useRestMutation("providers", "setSubscription");
+  const setBookingStatus = useRestMutation("bookings", "setStatus");
+  const moderate = useRestMutation("market", "moderate");
+  const handleLead = useRestMutation("providers", "handleLead");
+  const confirmPayment = useRestMutation("payments", "confirm");
+  const refundPayment = useRestMutation("payments", "refund");
+  const saveBotTokens = useRestMutation("telegram", "saveBotTokens");
+  const registerWebhooks = useRestAction("telegram", "registerWebhooks");
+  const pollBotUpdates = useRestAction("telegram", "pollUpdates");
 
   const [tokens, setTokens] = useState({ main: "", auth: "" });
   const [busy, setBusy] = useState<string | null>(null);
@@ -331,7 +330,7 @@ function AdminPanel() {
                         fontSize: 12,
                       }}
                     />
-                    <Bar dataKey="revenue" fill="#1E40AF" radius={[6, 6, 0, 0]} name="Tushum $" />
+                    <Bar dataKey="revenue" fill="#c65d3a" radius={[6, 6, 0, 0]} name="Tushum $" />
                     <Bar dataKey="bookings" fill="#F59E0B" radius={[6, 6, 0, 0]} name="Buyurtma" />
                   </BarChart>
                 </ResponsiveContainer>

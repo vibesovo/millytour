@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 
-import { useMutation } from "convex/react";
-import { api } from "@/convex/_generated/api";
+import { useRestMutation } from "@/api/client";
 import { useAuth } from "@/hooks/use-auth";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -25,7 +24,7 @@ const INTERESTS = [
  */
 export function OnboardingGate({ children }: { children?: React.ReactNode }) {
   const { isLoading, isAuthenticated, user } = useAuth();
-  const saveProfile = useMutation(api.account.completeOnboarding);
+  const saveProfile = useRestMutation("account", "completeOnboarding");
   const [open, setOpen] = useState(false);
   const [name, setName] = useState("");
   const [city, setCity] = useState<string>(CITIES[1] ?? CITIES[0]);
@@ -59,6 +58,13 @@ export function OnboardingGate({ children }: { children?: React.ReactNode }) {
         city,
         interests: interests.slice(0, 6),
       });
+      if (user) {
+        localStorage.setItem(
+          "millytour-local-user",
+          JSON.stringify({ ...user, name: name.trim() || user.name, onboardedAt: Date.now() }),
+        );
+      }
+      window.dispatchEvent(new Event("millytour:auth-change"));
       setOpen(false);
     } catch (e) {
       setError(e instanceof Error ? e.message : "Saqlanmadi, qaytadan urining");

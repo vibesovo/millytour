@@ -3,7 +3,7 @@ import { Gem, Sparkles, Zap } from "lucide-react";
 /**
  * Milly Card tariflari — klient tomonidagi ma'lumotlar.
  *
- * Backend (`src/convex/discountCards.ts`) haqiqiy manba, lekin Convex
+ * Backend haqiqiy manba, lekin
  * ulanmagan/sekin bo'lsa ham sahifa bo'sh qolmasligi uchun shu ro'yxat
  * zaxira sifatida ishlatiladi. Ikkala ro'yxat bir xil narx va foizlarga
  * ega — o'zgartirsangiz ikkalasini birga yangilang.

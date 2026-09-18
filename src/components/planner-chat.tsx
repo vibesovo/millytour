@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router";
-import { useAction, useMutation } from "convex/react";
+import { useRestAction, useRestMutation } from "@/api/client";
 import { motion } from "framer-motion";
 import { toast } from "sonner";
 import {
@@ -20,7 +20,6 @@ import {
   Users,
   Wallet,
 } from "lucide-react";
-import { api } from "@/convex/_generated/api";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { PatternOverlay } from "@/components/brand";
@@ -228,13 +227,13 @@ export function answerLabel(id: keyof PlannerAnswers, value: unknown) {
  *   mutaxassislar (mehmonxona, gid, transfer, tarjimon, fotograf) biriktiriladi.
  */
 export function PlannerChat({ variant }: { variant: "widget" | "page" }) {
-  const generate = useAction(api.aiPlanner.generate);
-  const freeChat = useAction(api.millyChat.chat);
-  const bookTour = useAction(api.millyChat.bookTour);
-  const rateReply = useMutation(api.aiMemory.rateReply);
-  const createFromPlan = useMutation(api.bookings.createFromPlan);
-  const startPayment = useMutation(api.payments.start);
-  const createCheckout = useAction(api.paymentGateway.createCheckout);
+  const generate = useRestAction("aiPlanner", "generate");
+  const freeChat = useRestAction("millyChat", "chat");
+  const bookTour = useRestAction("millyChat", "bookTour");
+  const rateReply = useRestMutation("aiMemory", "rateReply");
+  const createFromPlan = useRestMutation("bookings", "createFromPlan");
+  const startPayment = useRestMutation("payments", "start");
+  const createCheckout = useRestAction("paymentGateway", "createCheckout");
   const { isAuthenticated, user } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();

@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router";
-import { useMutation, useQuery } from "convex/react";
+import { useRestMutation, useRestQuery } from "@/api/client";
 import { motion } from "framer-motion";
 import { toast } from "sonner";
 import {
@@ -20,7 +20,6 @@ import {
   UtensilsCrossed,
   Wallet,
 } from "lucide-react";
-import { api } from "@/convex/_generated/api";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -61,9 +60,14 @@ const STEPS = [
 
 export default function Partners() {
   const [direction, setDirection] = useState<Direction>("guide");
-  const config = useQuery(api.telegram.config);
-  const menuPreview = useQuery(api.telegram.menuPreview, { direction });
-  const submitLead = useMutation(api.providers.submitLead);
+  const config = useRestQuery("telegram", "config");
+  const menuPreview = useRestQuery("telegram", "menuPreview", { direction });
+  const questionSet = useRestQuery<{ direction: Direction; questions: string[]; aiIntro: string }>(
+    "providers",
+    "questions",
+    { direction },
+  );
+  const submitLead = useRestMutation("providers", "submitLead");
 
   const [form, setForm] = useState({
     businessName: "",
@@ -75,6 +79,7 @@ export default function Partners() {
   });
   const [sending, setSending] = useState(false);
   const [sent, setSent] = useState(false);
+  const [directionAnswers, setDirectionAnswers] = useState<Record<string, string>>({});
 
   const active = PARTNER_DIRECTIONS.find((d) => d.id === direction)!;
   const botLink = config?.authDeepLink ?? partnerBotLink();
@@ -83,7 +88,7 @@ export default function Partners() {
     event.preventDefault();
     setSending(true);
     try {
-      await submitLead({ direction, ...form });
+      await submitLead({ direction, ...form, directionAnswers });
       setSent(true);
       toast.success("So'rov yuborildi — 1 ish kuni ichida bog'lanamiz");
     } catch (error) {
@@ -128,7 +133,10 @@ export default function Partners() {
               <button
                 key={item.id}
                 type="button"
-                onClick={() => setDirection(item.id)}
+                onClick={() => {
+                  setDirection(item.id);
+                  setDirectionAnswers({});
+                }}
                 className={cn(
                   "flex h-full flex-col rounded-2xl border bg-card p-5 text-left transition-all",
                   isActive
@@ -316,6 +324,24 @@ export default function Partners() {
                 </div>
               ) : (
                 <form onSubmit={submit} className="flex flex-col gap-3">
+                  {questionSet && (
+                    <div className="rounded-2xl border border-primary/15 bg-primary/[0.035] p-4">
+                      <p className="text-sm font-semibold text-foreground">AI yo'nalish savollari</p>
+                      <p className="mt-1 text-xs leading-5 text-muted-foreground">{questionSet.aiIntro}</p>
+                      <div className="mt-3 grid gap-3">
+                        {questionSet.questions.map((question, index) => (
+                          <label key={question} className="block">
+                            <span className="text-xs font-semibold text-muted-foreground">{question}</span>
+                            <Input
+                              value={directionAnswers[String(index)] ?? ""}
+                              onChange={(event) => setDirectionAnswers((current) => ({ ...current, [String(index)]: event.target.value }))}
+                              className="mt-1.5"
+                            />
+                          </label>
+                        ))}
+                      </div>
+                    </div>
+                  )}
                   <div className="grid gap-3 sm:grid-cols-2">
                     <label className="block">
                       <span className="text-xs font-semibold text-muted-foreground">

@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { useNavigate } from "react-router";
-import { ConvexError } from "convex/values";
 import { BadgeCheck, Loader2, LogIn, ShieldCheck, Sparkles, UserRound } from "lucide-react";
 import { toast } from "sonner";
 
@@ -56,12 +55,8 @@ export function AuthGateDialog({
     try {
       await signIn("anonymous");
       onOpenChange(false);
-    } catch (error) {
-      toast.error(
-        error instanceof ConvexError
-          ? "Mehmon sifatida kirish amalga oshmadi."
-          : "Mehmon sifatida kirish amalga oshmadi.",
-      );
+    } catch {
+      toast.error("Mehmon sifatida kirish amalga oshmadi.");
     } finally {
       setGuestBusy(false);
     }

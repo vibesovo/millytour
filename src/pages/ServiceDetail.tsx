@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 import { Link, Navigate, useParams, useSearchParams } from "react-router";
-import { useQuery } from "convex/react";
+import { useRestQuery } from "@/api/client";
 import { motion } from "framer-motion";
 import {
   ArrowLeft,
@@ -20,7 +20,6 @@ import {
   UtensilsCrossed,
 } from "lucide-react";
 
-import { api } from "@/convex/_generated/api";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import {
@@ -90,10 +89,12 @@ export default function ServiceDetail() {
   const typeId = params.get("type") ?? "all";
   const city = params.get("city") ?? "";
 
-  const providers = useQuery(
-    api.providers.publicList,
-    page ? { direction: page.direction } : "skip",
-  ) as ProviderRow[] | undefined;
+  const providers = useRestQuery<ProviderRow[]>(
+    "providers",
+    "publicList",
+    page ? { direction: page.direction } : {},
+    Boolean(page),
+  );
 
   const allRows = useMemo(() => providers ?? [], [providers]);
   const rows = useMemo(() => {
@@ -208,7 +209,7 @@ export default function ServiceDetail() {
             decoding="async"
             className="aspect-[4/3] w-full object-cover"
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-[#0B1220]/70 via-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-t from-[#17231d]/70 via-transparent" />
           <div className="absolute inset-x-0 bottom-0 flex items-center gap-2 p-4 text-white">
             <Icon className="size-5 text-gold" aria-hidden="true" />
             <span className="text-sm font-semibold">{page.label}</span>
@@ -430,7 +431,7 @@ export default function ServiceDetail() {
       </Container>
 
       {/* ── Qanday ishlaydi ───────────────────────────────────────────────── */}
-      <section className="relative overflow-hidden bg-[#0B1220] py-14 text-white">
+      <section className="relative overflow-hidden bg-[#17231d] py-14 text-white">
         <PatternOverlay tone="gold" opacityClass="opacity-[0.05]" />
         <Container className="relative">
           <p className="text-[11px] font-bold tracking-[0.16em] text-gold uppercase">

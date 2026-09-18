@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, useSearchParams } from "react-router";
-import { useMutation, useQuery } from "convex/react";
+import { useRestMutation, useRestQuery } from "@/api/client";
 import { toast } from "sonner";
 import {
   BadgeCheck,
@@ -18,7 +18,6 @@ import {
   UserRound,
   Wallet,
 } from "lucide-react";
-import { api } from "@/convex/_generated/api";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -52,9 +51,9 @@ const VEHICLE_LABELS: Record<string, string> = {
 
 export default function Partner() {
   const { isLoading } = useAuth();
-  const me = useQuery(api.providers.me);
-  const metrics = useQuery(api.providers.metrics);
-  const register = useMutation(api.providers.register);
+  const me = useRestQuery("providers", "me");
+  const metrics = useRestQuery("providers", "metrics");
+  const register = useRestMutation("providers", "register");
 
   // Bo'limlar URL'dan o'qiladi — yon menyu bosilganda kontent ham almashadi.
   const [params] = useSearchParams();
@@ -64,6 +63,7 @@ export default function Partner() {
       (id) => id === tabParam,
     ) ?? "overview";
   const [registering, setRegistering] = useState(false);
+  const [directionAnswers, setDirectionAnswers] = useState<Record<string, string>>({});
   const [form, setForm] = useState({
     direction: "guide" as Direction,
     businessName: "",
@@ -75,23 +75,25 @@ export default function Partner() {
   });
 
   const provider = me?.provider ?? null;
-
-  const menuPreview = useQuery(
-    api.telegram.menuPreview,
-    provider ? { direction: provider.direction } : {},
+  const questionSet = useRestQuery<{ direction: Direction; questions: string[]; aiIntro: string }>(
+    "providers",
+    "questions",
+    { direction: form.direction },
   );
-  const events = useQuery(api.telegram.events, { limit: 12 });
-  const items = useQuery(api.market.myItems);
-  const botConfig = useQuery(api.telegram.config);
-  const myTasks = useQuery(api.assignments.mine);
-  const setAssignmentStatus = useMutation(api.bookings.setAssignmentStatus);
 
-  const linkCode = useMutation(api.telegram.linkCode);
-  const updateProfile = useMutation(api.providers.updateProfile);
-  const reportVehicle = useMutation(api.providers.reportVehicle);
-  const addItem = useMutation(api.market.addItem);
-  const claim = useMutation(api.bookings.claim);
-  const setStatus = useMutation(api.bookings.setStatus);
+  const menuPreview = useRestQuery("telegram", "menuPreview", provider ? { direction: provider.direction } : {});
+  const events = useRestQuery("telegram", "events", { limit: 12 });
+  const items = useRestQuery("market", "myItems");
+  const botConfig = useRestQuery("telegram", "config");
+  const myTasks = useRestQuery("assignments", "mine");
+  const setAssignmentStatus = useRestMutation("bookings", "setAssignmentStatus");
+
+  const linkCode = useRestMutation("telegram", "linkCode");
+  const updateProfile = useRestMutation("providers", "updateProfile");
+  const reportVehicle = useRestMutation("providers", "reportVehicle");
+  const addItem = useRestMutation("market", "addItem");
+  const claim = useRestMutation("bookings", "claim");
+  const setStatus = useRestMutation("bookings", "setStatus");
 
   const [newItem, setNewItem] = useState({ title: "", category: "Kulolchilik", price: "" });
   const [savingProfile, setSavingProfile] = useState(false);
@@ -124,7 +126,10 @@ export default function Partner() {
                 <button
                   key={d.id}
                   type="button"
-                  onClick={() => setForm({ ...form, direction: d.id })}
+                  onClick={() => {
+                    setForm({ ...form, direction: d.id });
+                    setDirectionAnswers({});
+                  }}
                   className={cn(
                     "rounded-xl border p-3 text-left transition-colors",
                     form.direction === d.id
@@ -139,6 +144,25 @@ export default function Partner() {
                 </button>
               ))}
             </div>
+
+            {questionSet && (
+              <div className="mt-5 rounded-2xl border border-primary/15 bg-primary/[0.035] p-4">
+                <p className="text-sm font-semibold text-foreground">AI savollari</p>
+                <p className="mt-1 text-xs leading-5 text-muted-foreground">{questionSet.aiIntro}</p>
+                <div className="mt-3 grid gap-3">
+                  {questionSet.questions.map((question, index) => (
+                    <label key={question} className="block">
+                      <span className="text-xs font-semibold text-muted-foreground">{question}</span>
+                      <Input
+                        value={directionAnswers[String(index)] ?? ""}
+                        onChange={(event) => setDirectionAnswers((current) => ({ ...current, [String(index)]: event.target.value }))}
+                        className="mt-1.5"
+                      />
+                    </label>
+                  ))}
+                </div>
+              </div>
+            )}
 
             <div className="mt-4 grid gap-3 sm:grid-cols-2">
               <label className="block">
@@ -225,6 +249,7 @@ export default function Partner() {
                     about: form.about || undefined,
                     languages: ["UZ", "RU"],
                     experienceYears: Number(form.experienceYears) || undefined,
+                    directionAnswers,
                   });
                   toast.success("Profil yaratildi — tasdiqlash kutilmoqda");
                 } catch (error) {

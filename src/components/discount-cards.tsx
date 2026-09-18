@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useMutation, useQuery } from "convex/react";
+import { useRestMutation, useRestQuery } from "@/api/client";
 import { motion } from "framer-motion";
 import { toast } from "sonner";
 import {
@@ -13,7 +13,6 @@ import {
   TrendingDown,
   Wallet,
 } from "lucide-react";
-import { api } from "@/convex/_generated/api";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import {
@@ -98,9 +97,9 @@ const STYLE_TABS: { id: CardStyleId; label: string; icon: typeof Palette }[] = [
 
 export function DiscountCardsSection({ id }: { id?: string }) {
   const { user } = useAuth();
-  const liveTiers = useQuery(api.discountCards.tiers);
-  const activeCard = useQuery(api.discountCards.active, user ? undefined : "skip");
-  const purchase = useMutation(api.discountCards.purchase);
+  const liveTiers = useRestQuery("discountCards", "tiers");
+  const activeCard = useRestQuery("discountCards", "active", {}, Boolean(user));
+  const purchase = useRestMutation("discountCards", "purchase");
 
   const [pref, setPref] = useState<CardPreference>(() => loadPreference());
   const [tierId, setTierId] = useState<TierId>("6");

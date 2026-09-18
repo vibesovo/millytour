@@ -1,5 +1,4 @@
-import { useQuery } from "convex/react";
-import { api } from "@/convex/_generated/api";
+import { useRestQuery } from "@/api/client";
 import { TOUR_PACKAGES, type TourPackage } from "@/data/catalog";
 
 /**
@@ -47,7 +46,7 @@ export function usePackages(args?: {
     queryArgs.limit = args.limit;
   }
 
-  const rows = useQuery(api.packages.list, queryArgs);
+  const rows = useRestQuery("packages", "list", queryArgs);
   const isLoading = rows === undefined;
 
   const packages: PackageView[] = (rows ?? []).map((row) => ({
@@ -78,9 +77,9 @@ export function usePackages(args?: {
     featured: row.featured,
   }));
 
-  // Convex javobi kelgunicha statik katalog ko'rsatiladi — sahifa hech qachon
+  // Backend javobi kelgunicha statik katalog ko'rsatiladi — sahifa hech qachon
   // bo'sh ko'rinmaydi (sekin/uzilgan tarmoqda ham paketlar ko'rinib turadi).
-  if (isLoading) {
+  if (isLoading || packages.length === 0) {
     return {
       packages: TOUR_PACKAGES.map(fromStatic),
       isLoading,
@@ -99,7 +98,7 @@ export function usePackages(args?: {
 
 /** Bitta paketni slug bo'yicha olish (baza → statik fallback). */
 export function usePackage(slug: string | undefined) {
-  const row = useQuery(api.packages.bySlug, slug ? { slug } : "skip");
+  const row = useRestQuery("packages", "bySlug", slug ? { slug } : {}, Boolean(slug));
   if (!slug) {
     return { pkg: null, isLoading: false };
   }
@@ -111,7 +110,8 @@ export function usePackage(slug: string | undefined) {
     };
   }
   if (row === null) {
-    return { pkg: null, isLoading: false };
+    const fallback = TOUR_PACKAGES.find((t) => t.slug === slug);
+    return { pkg: fallback ? fromStatic(fallback) : null, isLoading: false };
   }
   return {
     pkg: {
