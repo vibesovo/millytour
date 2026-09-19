@@ -288,7 +288,7 @@ export default function Partner() {
                     rel="noreferrer"
                   >
                     <Bot className="size-4" aria-hidden="true" />
-                    mtour_auth_bot ni ochish
+                    millytour_bot ni ochish
                   </a>
                 </Button>
               </CardContent>

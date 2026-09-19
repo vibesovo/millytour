@@ -259,20 +259,31 @@ export function PlannerChat({ variant }: { variant: "widget" | "page" }) {
   const [booking, setBooking] = useState(false);
   const [bookResult, setBookResult] = useState<BookResult | null>(null);
   const [gatewayMessage, setGatewayMessage] = useState<string | null>(null);
-  /** Milly AI taklifi — dastur kontekstidan kelgan xizmat tanlash kartasi. */
   const [offer, setOffer] = useState<OfferPayload | null>(null);
-  /** "plan" — dastur tuzilyapti, "chat" — erkin savolga javob yozilyapti. */
   const [pendingMode, setPendingMode] = useState<"plan" | "chat">("plan");
-  /** Erkin chat konteksti — oxirgi 8 xabar AI'ga uzatiladi. */
   const historyRef = useRef<Array<{ role: "user" | "assistant"; content: string }>>([]);
+
+  /** Initial state from "AI bilan qidirish" — stores search params in sessionStorage. */
+  const [initialSearch] = useState<{ city: string; days: string; guests: string } | null>(() => {
+    try {
+      const raw = sessionStorage.getItem("millytour.ai.search");
+      if (raw) {
+        sessionStorage.removeItem("millytour.ai.search");
+        return JSON.parse(raw);
+      }
+    } catch {
+      // ignore
+    }
+    return null;
+  });
 
   const [messages, setMessages] = useState<ChatMessage[]>([
     {
       id: newId(),
       role: "bot",
-      text:
-        "Assalomu alaykum! Men Milly AI — sayohat dasturingizni tuzaman.\n\n" +
-        "Bir necha savol beraman, so'ng sizga 2 xil tayyor dastur taklif qilaman. Qaysi shahardan boshlaymiz?",
+      text: initialSearch
+        ? `${initialSearch.city} · ${initialSearch.days} kun · ${initialSearch.guests} kishi — Milly AI siz uchun dastur tuzmoqda...\n\nBir nechta savol beraman, so'ng 2 xil tayyor dastur taklif qilaman.`
+        : "Assalomu alaykum! Men Milly AI — sayohat dasturingizni tuzaman.\n\nBir necha savol beraman, so'ng sizga 2 xil tayyor dastur taklif qilaman. Qaysi shahardan boshlaymiz?",
     },
   ]);
 
@@ -792,6 +803,12 @@ export function PlannerChat({ variant }: { variant: "widget" | "page" }) {
           return (
             <div key={message.id} className={cn("flex", isUser ? "justify-end" : "justify-start")}>
               <div className={cn("max-w-[85%]", !isUser && "space-y-1")}>
+                {!isUser && (
+                  <span className="mb-1 inline-flex items-center gap-1 rounded-full bg-eco/10 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-eco">
+                    <Sparkles className="size-3" aria-hidden="true" />
+                    Milly AI
+                  </span>
+                )}
                 <p
                   className={cn(
                     "rounded-2xl px-3.5 py-2.5 text-[13px] leading-5 whitespace-pre-line",
@@ -916,13 +933,13 @@ export function PlannerChat({ variant }: { variant: "widget" | "page" }) {
 
         {phase === "feedback" && chosenIndex !== null && (
           <div className="flex flex-wrap gap-2">
-            <Button size="sm" onClick={startBooking}>
+            <Button size="sm" variant="outline" onClick={startBooking}>
               <BadgeCheck className="size-3.5" aria-hidden="true" />
               Tur to'liq ma'qul — bron qilishga o'tamiz
             </Button>
             <Button
               size="sm"
-              variant="outline"
+              variant="destructive"
               onClick={() => {
                 setPhase("options");
                 push({
@@ -984,7 +1001,7 @@ export function PlannerChat({ variant }: { variant: "widget" | "page" }) {
               ))}
             </div>
             <Button
-              className="mt-3 w-full"
+              className="mt-3 w-full bg-eco hover:bg-eco/90 text-white"
               onClick={offer ? submitOfferBooking : submitBooking}
               disabled={booking}
             >
@@ -1094,10 +1111,14 @@ function PlanOptions({
             <Button
               size="sm"
               className="mt-3 w-full"
-              variant={active ? "secondary" : "default"}
+              variant={active ? "default" : "secondary"}
               onClick={() => onChoose(index)}
             >
-              {active ? "Tanlangan" : "Shu variantni tanlash"}
+              {active ? (
+                <><Check className="size-3.5" aria-hidden="true" /> Tanlangan</>
+              ) : (
+                "Shu variantni tanlash"
+              )}
             </Button>
           </div>
         );
@@ -1167,16 +1188,16 @@ function OfferCard({
         </span>
         <span className="text-[15px] font-bold text-foreground">${pickedTotal}</span>
       </div>
-      <Button className="mt-2.5 w-full" onClick={onBook} disabled={booking || active.length === 0}>
-        {booking ? (
-          <Loader2 className="size-4 animate-spin" aria-hidden="true" />
-        ) : (
-          <>
-            <BadgeCheck className="size-4" aria-hidden="true" />
-            Bron qilishga o'tish
-          </>
-        )}
-      </Button>
+            <Button className="mt-2.5 w-full" variant="eco" onClick={onBook} disabled={booking || active.length === 0}>
+              {booking ? (
+                <Loader2 className="size-4 animate-spin" aria-hidden="true" />
+              ) : (
+                <>
+                  <BadgeCheck className="size-4" aria-hidden="true" />
+                  Bron qilishga o'tish
+                </>
+              )}
+            </Button>
     </div>
   );
 }
@@ -1262,7 +1283,7 @@ function BookingResultCard({
         </div>
 
         <div className="flex flex-wrap gap-2">
-          <Button size="sm" onClick={onPay}>
+          <Button size="sm" variant="eco" onClick={onPay}>
             <CreditCard className="size-3.5" aria-hidden="true" />
             To'lovni yakunlash
           </Button>
@@ -1450,17 +1471,18 @@ export function PlanResult({
           )}
 
           <div className="flex flex-wrap gap-2">
-            <Button size="sm" asChild>
-              <Link to={packs[0] ? `/paketlar/${packs[0].slug}` : "/paketlar"}>
-                Tur paketni band qilish
-                <ArrowRight className="size-3.5" aria-hidden="true" />
-              </Link>
-            </Button>
-            <Button size="sm" variant="outline" asChild>
-              <Link to={isAuthenticated ? "/dashboard" : "/auth?returnTo=%2Fdashboard"}>
-                {isAuthenticated ? "Kabinetda saqlangan" : "Hisobga saqlash"}
-              </Link>
-            </Button>
+          <Button size="sm" variant="eco" asChild>
+            <Link to={packs[0] ? `/paketlar/${packs[0].slug}` : "/paketlar"}>
+              Tur paketni band qilish
+              <ArrowRight className="size-3.5" aria-hidden="true" />
+            </Link>
+          </Button>
+          <Button size="sm" variant="outline" asChild>
+            <Link to={isAuthenticated ? "/dashboard" : "/auth?returnTo=%2Fdashboard"}>
+              {isAuthenticated ? "Kabinetda saqlangan" : "Hisobga saqlash"}
+              <ExternalLink className="size-3.5" aria-hidden="true" />
+            </Link>
+          </Button>
           </div>
         </div>
       </div>

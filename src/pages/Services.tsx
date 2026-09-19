@@ -227,7 +227,7 @@ export default function Services() {
                   Hozircha tasdiqlangan mutaxassis yo'q
                 </p>
                 <p className="max-w-md text-sm text-muted-foreground">
-                  Mutaxassislar mtour_auth_bot orqali ro'yxatdan o'tadi va administrator
+                  Mutaxassislar millytour_bot orqali ro'yxatdan o'tadi va administrator
                   tasdiqlagach shu ro'yxatda chiqadi.
                 </p>
                 <div className="mt-1 flex flex-wrap justify-center gap-2">

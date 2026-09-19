@@ -266,22 +266,22 @@ export function PanelCard({
 }
 
 const STATUS_STYLES: Record<string, string> = {
-  new: "bg-primary/10 text-primary",
-  confirmed: "bg-gold/20 text-[#8a5a00]",
+  new: "bg-gold/20 text-[#8a5a00]",
+  confirmed: "bg-eco/15 text-eco",
   completed: "bg-eco/15 text-eco",
   cancelled: "bg-destructive/10 text-destructive",
   pending: "bg-gold/20 text-[#8a5a00]",
   approved: "bg-eco/15 text-eco",
   rejected: "bg-destructive/10 text-destructive",
   paused: "bg-muted text-muted-foreground",
-  trial: "bg-primary/10 text-primary",
+  trial: "bg-gold/20 text-[#8a5a00]",
   active: "bg-eco/15 text-eco",
   overdue: "bg-destructive/10 text-destructive",
   paid: "bg-eco/15 text-eco",
   unpaid: "bg-gold/20 text-[#8a5a00]",
   refunded: "bg-muted text-muted-foreground",
   failed: "bg-destructive/10 text-destructive",
-  assigned: "bg-primary/10 text-primary",
+  assigned: "bg-gold/20 text-[#8a5a00]",
   notified: "bg-gold/20 text-[#8a5a00]",
   accepted: "bg-eco/15 text-eco",
   declined: "bg-destructive/10 text-destructive",
@@ -289,7 +289,7 @@ const STATUS_STYLES: Record<string, string> = {
 };
 
 const STATUS_LABELS: Record<string, string> = {
-  new: "Yangi",
+  new: "Kutilmoqda",
   confirmed: "Tasdiqlangan",
   completed: "Bajarilgan",
   cancelled: "Bekor qilingan",

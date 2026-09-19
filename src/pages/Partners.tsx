@@ -42,7 +42,7 @@ const DIRECTION_ICONS: Record<Direction, React.ElementType> = {
 const STEPS = [
   {
     title: "Auth botga o'ting",
-    text: "Telegram'dagi mtour_auth_bot botini oching va yo'nalishingizni tanlang.",
+    text: "Telegram'dagi millytour_bot botini oching va yo'nalishingizni tanlang.",
   },
   {
     title: "Ma'lumotlarni kiriting",
@@ -103,7 +103,7 @@ export default function Partners() {
       <PageHero
         eyebrow="Hamkorlik"
         title="Millytour hamkori bo'ling — yo'nalishingizga mos boshqaruv paneli bilan"
-        description="Gid, transfer, tarjimon, fotograf, hunarmand yoki mehmonxona egasimisiz? mtour_auth_bot orqali ro'yxatdan o'ting va buyurtmalarni o'z bot hamda panelingizda boshqaring."
+        description="Gid, transfer, tarjimon, fotograf, hunarmand yoki mehmonxona egasimisiz? millytour_bot orqali ro'yxatdan o'ting va buyurtmalarni o'z bot hamda panelingizda boshqaring."
       >
         <div className="flex flex-wrap gap-3">
           <Button size="lg" className="bg-gold text-gold-foreground hover:bg-gold/90" asChild>
@@ -313,7 +313,7 @@ export default function Partners() {
                   </p>
                   <p className="max-w-sm text-[13px] leading-5 text-muted-foreground">
                     Mutaxassis 1 ish kuni ichida bog'lanadi. Tezroq boshlash uchun
-                    mtour_auth_bot da ro'yxatdan o'ting.
+                    millytour_bot da ro'yxatdan o'ting.
                   </p>
                   <Button asChild>
                     <a href={botLink} target="_blank" rel="noreferrer">

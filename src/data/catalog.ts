@@ -23,10 +23,10 @@ export const TOUR_CATEGORIES = [
 export type CategoryId = (typeof TOUR_CATEGORIES)[number]["id"];
 
 /** Hamkorlarni qabul qiluvchi auth bot — barcha hamkorlik CTA'lari shu yerga olib boradi. */
-export const PARTNER_BOT_USERNAME = "mtour_auth_bot";
+export const PARTNER_BOT_USERNAME = "millytour_bot";
 export const MAIN_BOT_USERNAME = "millytour_bot";
 /** Owner uchun statistika boti — faqat loyiha egasi kuzatadi. */
-export const STATS_BOT_USERNAME = "mtour_stats_bot";
+export const STATS_BOT_USERNAME = "millytour_bot";
 
 export function partnerBotLink(payload = "register") {
   return `https://t.me/${PARTNER_BOT_USERNAME}?start=${payload}`;

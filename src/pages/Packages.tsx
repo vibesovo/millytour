@@ -493,7 +493,7 @@ export default function Packages() {
                 </h3>
                 <p className="text-sm leading-6 text-muted-foreground">
                   Gid, transfer, restoran, tarjimon, fotograf, hunarmand, mehmonxona yoki boshqa
-                  turizm xizmati egasi bo'lsangiz — mtour_auth_bot orqali ro'yxatdan o'tib, o'z
+                  turizm xizmati egasi bo'lsangiz — millytour_bot orqali ro'yxatdan o'tib, o'z
                   boshqaruv panelingizni oling.
                 </p>
                 <Button variant="outline" className="mt-1 self-start" asChild>

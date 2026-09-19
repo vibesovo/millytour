@@ -338,7 +338,7 @@ export default function ServiceDetail() {
                 Bu yo'nalishda hozircha tasdiqlangan mutaxassis yo'q
               </p>
               <p className="max-w-md text-sm text-muted-foreground">
-                {page.label} bo'yicha hamkorlar mtour_auth_bot orqali ro'yxatdan o'tadi va
+                {page.label} bo'yicha hamkorlar millytour_bot orqali ro'yxatdan o'tadi va
                 administrator tasdiqlagach shu ro'yxatda chiqadi. Hoziroq so'rov qoldirsangiz,
                 birinchi mos mutaxassisga yuboriladi.
               </p>

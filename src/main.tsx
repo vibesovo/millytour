@@ -3,6 +3,7 @@ import { Toaster } from "@/components/ui/sonner";
 import { RequireAuth } from "@/components/RequireAuth";
 import { VlyToolbar } from "../vly-toolbar-readonly.tsx";
 import { AiAssistant } from "@/components/AiAssistant";
+import { ScrollToTop } from "@/components/ScrollToTop";
 import { OnboardingGate } from "@/components/OnboardingGate";
 import { SiteLayout } from "@/components/site";
 import React, { StrictMode, useEffect, lazy, Suspense } from "react";
@@ -135,106 +136,22 @@ root.render(
             <RouteSyncer />
             <Suspense fallback={<RouteLoading />}>
               <Routes>
-                <Route
-                  path="/"
-                  element={
-                    <Public>
-                      <Landing />
-                    </Public>
-                  }
-                />
-                <Route
-                  path="/paketlar"
-                  element={
-                    <Public>
-                      <Packages />
-                    </Public>
-                  }
-                />
-                <Route
-                  path="/paketlar/:slug"
-                  element={
-                    <Public>
-                      <PackageDetail />
-                    </Public>
-                  }
-                />
-                <Route
-                  path="/xizmatlar"
-                  element={
-                    <Public>
-                      <Services />
-                    </Public>
-                  }
-                />
-                <Route
-                  path="/xizmatlar/:service"
-                  element={
-                    <Public>
-                      <ServiceDetail />
-                    </Public>
-                  }
-                />
-                <Route
-                  path="/hunarmandlar"
-                  element={
-                    <Public>
-                      <Marketplace />
-                    </Public>
-                  }
-                />
-                <Route
-                  path="/hamkorlar"
-                  element={
-                    <Public>
-                      <Partners />
-                    </Public>
-                  }
-                />
-                <Route
-                  path="/telegram"
-                  element={
-                    <TelegramEntry />
-                  }
-                />
-                <Route
-                  path="/auth"
-                  element={<AuthPage redirectAfterAuth="/dashboard" />}
-                />
-                <Route
-                  path="/dashboard"
-                  element={
-                    <RequireAuth>
-                      <Dashboard />
-                    </RequireAuth>
-                  }
-                />
-                <Route
-                  path="/partner"
-                  element={
-                    <RequireAuth>
-                      <Partner />
-                    </RequireAuth>
-                  }
-                />
-                <Route
-                  path="/admin"
-                  element={
-                    <RequireAuth>
-                      <Admin />
-                    </RequireAuth>
-                  }
-                />
-                <Route
-                  path="*"
-                  element={
-                    <Public>
-                      <NotFound />
-                    </Public>
-                  }
-                />
+                <Route path="/" element={<Public><Landing /></Public>} />
+                <Route path="/paketlar" element={<Public><Packages /></Public>} />
+                <Route path="/paketlar/:slug" element={<Public><PackageDetail /></Public>} />
+                <Route path="/xizmatlar" element={<Public><Services /></Public>} />
+                <Route path="/xizmatlar/:service" element={<Public><ServiceDetail /></Public>} />
+                <Route path="/hunarmandlar" element={<Public><Marketplace /></Public>} />
+                <Route path="/hamkorlar" element={<Public><Partners /></Public>} />
+                <Route path="/telegram" element={<TelegramEntry />} />
+                <Route path="/auth" element={<AuthPage redirectAfterAuth="/dashboard" />} />
+                <Route path="/dashboard" element={<RequireAuth><Dashboard /></RequireAuth>} />
+                <Route path="/partner" element={<RequireAuth><Partner /></RequireAuth>} />
+                <Route path="/admin" element={<RequireAuth><Admin /></RequireAuth>} />
+                <Route path="*" element={<Public><NotFound /></Public>} />
               </Routes>
             </Suspense>
+            <ScrollToTop />
             <AiAssistant />
             <OnboardingGate />
           </BrowserRouter>

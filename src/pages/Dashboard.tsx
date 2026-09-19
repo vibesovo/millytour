@@ -863,7 +863,7 @@ export default function Dashboard() {
                 </li>
                 <li className="flex items-center gap-2">
                   <Send className="size-4 text-primary" aria-hidden="true" />
-                  Telegram: @millytour_support
+                  Telegram: @millytour_bot
                 </li>
                 <li className="flex items-center gap-2">
                   <CalendarDays className="size-4 text-primary" aria-hidden="true" />

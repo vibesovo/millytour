@@ -188,7 +188,7 @@ export default function Marketplace() {
                   O'z ustaxonangizni onlayn do'konga aylantiring
                 </h2>
                 <p className="text-sm leading-6 text-muted-foreground">
-                  mtour_auth_bot orqali ro'yxatdan o'ting, mahsulotlarni botga yuboring —
+                  millytour_bot orqali ro'yxatdan o'ting, mahsulotlarni botga yuboring —
                   moderatsiyadan so'ng do'koningiz shu yerda chiqadi. Oylik obuna $19.
                 </p>
                 <Button className="self-start" asChild>

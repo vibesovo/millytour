@@ -60,10 +60,11 @@ export function AiAssistant() {
 
   if (isMiniApp) {
     return (
-      <section
-        aria-label="Milly AI yordamchisi"
-        className="mx-auto flex min-h-[calc(100vh-4rem)] w-full max-w-2xl flex-col justify-center px-4 py-6"
-      >          <div className="glass-card flex flex-col overflow-hidden rounded-3xl">
+        <section
+          aria-label="Milly AI yordamchisi"
+          className="mx-auto flex min-h-[calc(100vh-4rem)] w-full max-w-2xl flex-col justify-center px-4 py-6"
+        >
+          <div className="glass-card flex flex-col overflow-hidden rounded-3xl">
             <header className="relative flex items-center gap-3 overflow-hidden bg-gradient-to-r from-[#0B1220] via-[#12306B] to-[#1E40AF] px-5 py-4 text-white">
             <span className="grid size-10 shrink-0 place-items-center rounded-xl bg-white/15">
               <Sparkles className="size-5 text-gold" aria-hidden="true" />
