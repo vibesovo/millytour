@@ -6,16 +6,15 @@ import { cn } from "@/lib/utils";
 
 const FACTS = [
   { icon: MessageSquareText, label: "Savol-javob: shahar, kun, kishi, byudjet" },
-  { icon: Sparkles, label: "2 xil dastur: komfort va tejamkor" },
-  { icon: Users, label: "Mutaxassislar avtomatik biriktiriladi" },
-  { icon: Wallet, label: "Bron va to'lov shu yerning o'zida" },
+  { icon: Sparkles, label: "Ikki xil dastur: komfort va tejamkor" },
+  { icon: Users, label: "Gid, mehmonxona, transfer — avtomatik" },
+  { icon: Wallet, label: "Bron va to'lov chat ichida" },
 ];
 
 const FLOW = [
   "Savollarga javob berasiz",
-  "AI 2 xil dastur taklif qiladi",
-  "Birini tanlaysiz, kamchilik bo'lsa yozasiz",
-  "Ma'qul bo'lsa — bron va to'lov",
+  "AI ikki xil dastur taklif qiladi",
+  "Tanlaysiz — bron va to'lov shu yerda",
 ];
 
 /**
@@ -26,7 +25,7 @@ export function AiSection({ className, id = "milly-ai" }: { className?: string; 
   return (
     <section
       id={id}
-      className={cn("scroll-mt-24 border-t bg-muted/40 py-14 lg:py-20", className)}
+      className={cn("scroll-mt-24 border-y bg-muted/40 py-14 lg:py-20", className)}
       aria-label="Milly AI"
     >
       <Container>
@@ -37,13 +36,12 @@ export function AiSection({ className, id = "milly-ai" }: { className?: string; 
               Milly AI
             </span>
             <h2 className="mt-3 text-2xl leading-8 font-bold tracking-tight text-foreground sm:text-[28px] sm:leading-9">
-              Milly AI — sayohat dasturingizni 30 soniyada tuzadi
+              Milly AI — dasturni bir necha savolda tuzadi
             </h2>
             <p className="mt-3 max-w-xl text-[15px] leading-6 text-muted-foreground">
-              Savollarga javob bering — AI ikki xil tayyor dastur beradi: komfort va tejamkor.
-              Birini tanlaysiz, kamchilik bo'lsa yozasiz va AI dasturni qayta tuzadi. Ma'qul
-              bo'lsa, mehmonxona, gid, transfer, restoran, tarjimon va fotograf o'zi
-              biriktiriladi — bron va to'lov ham chatning ichida yakunlanadi.
+              Savollarga javob bering: AI ikki xil dastur beradi — komfort va tejamkor. Birini
+              tanlaysiz, kerak bo'lsa o'zgartirasiz, so'ngra gid, mehmonxona va transfer
+              biriktiriladi. Bron va to'lov ham chat ichida.
             </p>
 
             <ul className="mt-5 grid gap-2 sm:grid-cols-2">

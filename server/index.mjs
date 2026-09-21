@@ -92,14 +92,46 @@ async function currentUser(req) {
 async function requireUser(req) { const user = await currentUser(req); if (!user) throw new Error("Authentication required"); return user; }
 async function record(kind, data, userId = null) { const id = randomUUID(); await db.run("INSERT INTO records (id, kind, user_id, data, created_at) VALUES (?, ?, ?, ?, ?)", id, kind, userId, JSON.stringify(data), Date.now()); return { _id: id, ...data }; }
 async function records(kind, userId) { const rows = userId === undefined ? await db.all("SELECT * FROM records WHERE kind = ? ORDER BY created_at DESC", kind) : await db.all("SELECT * FROM records WHERE kind = ? AND user_id = ? ORDER BY created_at DESC", kind, userId); return rows.map((row) => ({ _id: row.id, ...json(row.data) })); }
+/** Mijozlar fikri reaksiyasi: faqat 👍 / 👎 bo'ladi. */
+function reactionKind(row) { return row.kind === "dislike" ? "dislike" : "like"; }
+/** Eski `review_like` yozuvlari ham "like" sifatida o'qiladi (moslik uchun). */
+async function allReactionRows() { const rows = await records("review_reaction"); const legacy = await records("review_like"); return [...rows, ...legacy.map((row) => ({ ...row, kind: "like" }))]; }
 
 function packageRow(slug) { return { key: `catalog:${slug}`, dbId: null, slug, title: slug.replaceAll("-", " "), summary: "O'zbekiston bo'ylab sayohat dasturi", category: "historical", city: "Samarqand", region: "Samarqand", days: 3, nights: 2, priceFrom: 250, rating: 4.8, reviews: 0, groupSize: "2-12 kishi", nextDeparture: "Har hafta", languages: ["uz", "ru", "en"], includes: [], highlights: [], image: "", alt: slug, status: "published", featured: false, source: "catalog" }; }
 function buildPlans(answers = {}) { const city = typeof answers.city === "string" ? answers.city : "Samarqand"; const days = Math.max(1, Number(answers.days) || 3); const travelers = Math.max(1, Number(answers.travelers) || 2); const budget = Math.max(80, Number(answers.budget) || 800); return ["Komfort", "Tejamkor"].map((label, index) => { const total = Math.round(Math.min(budget, (index ? 75 : 125) * days * travelers)); return { title: `${label} ${city} sayohati`, summary: `${days} kunlik ${city} dasturi · ${label.toLowerCase()} variant`, cities: [city], days: Array.from({ length: days }, (_, day) => ({ day: day + 1, city, title: `${city} bo'ylab kun ${day + 1}`, lodging: index ? "3* mehmonxona" : "4* mehmonxona", spend: Math.round(total / days), items: [{ time: "09:00", title: "Shahar bo'ylab sayohat", note: "Mahalliy gid bilan", kind: "meros" }] })), estimate: { total, perPerson: Math.round(total / travelers), currency: "USD", withinBudget: total <= budget, breakdown: [{ label: "Turar joy va xizmatlar", amount: total }] }, tips: ["Qulay oyoq kiyim kiying"], pack: ["Pasport", "Quyoshdan himoya"] }; }); }
 
-async function groq(message, history = []) {
+/**
+ * Milly AI uchun qat'iy qoida: model faqat katalogdagi mavjud tur paketlarni
+ * tavsiya qiladi. Narx, kun va shaharlar o'zgartirilmaydi — model matn yozadi,
+ * tanlov esa klientdagi narx algoritmida (src/lib/ai-recommend.ts) qoladi.
+ */
+const CATALOG_RULE = "Siz Milly AI siz. Faqat quyidagi ro'yxatdagi tur paketlarni tavsiya qilasiz: narx, kun soni va shaharni o'zgartirmaysiz, yangi tur yoki narx o'ylab topmaysiz. Javobni foydalanuvchi tilida yozasiz.";
+
+function catalogPrompt(catalog) {
+  if (!Array.isArray(catalog) || catalog.length === 0) return "";
+  const rows = catalog
+    .slice(0, 8)
+    .map((item) => `- ${item.title} | ${item.city || "O'zbekiston"} | ${item.days || "?"} kun | $${item.perPerson}/kishi (jami ~$${item.total})`)
+    .join("\n");
+  return `${CATALOG_RULE}\n\nMavjud tur paketlar:\n${rows}`;
+}
+
+/** AI kaliti yo'q paytdagi zaxira javob — baribir faqat mavjud paketlar. */
+function catalogReply(catalog) {
+  if (!Array.isArray(catalog) || catalog.length === 0) {
+    return "Milly AI hozir narxga asoslangan rejimda ishlayapti. Shahar, kunlar soni va byudjetni yozing — katalogdagi mos tur paketlarni narxi bilan taklif qilaman.";
+  }
+  const lines = catalog
+    .slice(0, 5)
+    .map((item, index) => `${index + 1}. ${item.title} — ${item.reason || `$${item.perPerson}/kishi`}`);
+  return `Hozir AI modeli ulanmagan (API kaliti sozlanmagan), shuning uchun katalogdagi mavjud tur paketlarni narx bo'yicha saralab berdim:\n\n${lines.join("\n")}\n\n«Tur paketlar» bo'limida batafsil ma'lumot bor.`;
+}
+
+async function groq(message, history = [], catalog = []) {
   const key = process.env.GROQ_API_KEY;
   if (!key) return null;
-  const response = await fetch("https://api.groq.com/openai/v1/chat/completions", { method: "POST", headers: { "Content-Type": "application/json", Authorization: `Bearer ${key}` }, body: JSON.stringify({ model: process.env.GROQ_MODEL || "qwen/qwen3-32b", temperature: 0.6, max_tokens: 700, messages: [{ role: "system", content: "You are Milly AI, a helpful Uzbekistan travel assistant. Reply in the user's language." }, ...history, { role: "user", content: message }] }) });
+  const system = catalogPrompt(catalog) || "You are Milly AI, a helpful Uzbekistan travel assistant. Reply in the user's language.";
+  const response = await fetch("https://api.groq.com/openai/v1/chat/completions", { method: "POST", headers: { "Content-Type": "application/json", Authorization: `Bearer ${key}` }, body: JSON.stringify({ model: process.env.GROQ_MODEL || "qwen/qwen3-32b", temperature: 0.6, max_tokens: 700, messages: [{ role: "system", content: system }, ...history, { role: "user", content: message }] }) });
   if (!response.ok) return null;
   const payload = await response.json();
   return payload.choices?.[0]?.message?.content || null;
@@ -132,13 +164,60 @@ async function dispatch(module, operation, args, req) {
   if (module === "account" && operation === "completeOnboarding") { const authUser = await requireUser(req); await db.run("UPDATE users SET name = COALESCE(?, name), interests = ?, onboarded_at = ? WHERE id = ?", args.name || null, JSON.stringify(args.interests || []), Date.now(), authUser._id); return { ok: true }; }
   if (module === "account" && operation === "setLanguage") { const authUser = await requireUser(req); await db.run("UPDATE users SET language = ? WHERE id = ?", args.language, authUser._id); return { language: args.language }; }
   if (module === "account" && operation === "setInterests") { const authUser = await requireUser(req); await db.run("UPDATE users SET interests = ? WHERE id = ?", JSON.stringify(args.interests || []), authUser._id); return { ok: true }; }
-  if (module === "aiStatus" && operation === "status") return { provider: process.env.GROQ_API_KEY ? "groq" : "none", model: process.env.GROQ_MODEL || "rule-based", ready: Boolean(process.env.GROQ_API_KEY), languages: ["uz", "ru", "en"], abilities: ["travel", "booking", "payments"] };
+  if (module === "aiStatus" && operation === "status") return { provider: process.env.GROQ_API_KEY ? "groq" : "none", model: process.env.GROQ_MODEL || "rule-based", ready: Boolean(process.env.GROQ_API_KEY), engine: process.env.GROQ_API_KEY ? "llm" : "rule-based", recommender: "catalog-price", languages: ["uz", "ru", "en"], abilities: ["travel", "booking", "payments"] };
   if (module === "aiPlanner" && operation === "generate") { const options = buildPlans(args.answers); const saved = await record("plan", { sessionKey: args.sessionKey, answers: args.answers, options, plan: options[0], engine: "rule-based", createdAt: Date.now() }, userId); return { planId: saved._id, options, engine: "rule-based" }; }
-  if (module === "millyChat" && operation === "chat") { const reply = await groq(String(args.message || ""), args.history || []); return { reply: reply || "Milly AI hozir qoidaga asoslangan rejimda ishlayapti. Sayohat shahringiz va kunlar sonini yozing.", lang: "uz", engine: reply ? "ai" : "rule-based" }; }
+  if (module === "millyChat" && operation === "chat") {
+    // Klient katalogdagi mos paketlarni yuboradi — model faqat shular asosida javob yozadi.
+    const catalog = Array.isArray(args.catalog) ? args.catalog : [];
+    const reply = await groq(String(args.message || ""), args.history || [], catalog);
+    return { reply: reply || catalogReply(catalog), lang: "uz", engine: reply ? "ai" : "rule-based", recommendations: catalog };
+  }
   if (module === "millyChat" && operation === "bookTour") return createBooking(args, req, user);
   if (module === "aiMemory" && operation === "rateReply") return { ok: true };
   if (module === "packages" && ["list", "recommended", "adminList"].includes(operation)) return [];
   if (module === "packages" && operation === "bySlug") return packageRow(args.slug);
+  // Mijozlar fikri uchun "foydali" (tasdiqlash) tugmasi. Login qilmagan
+  // mijoz `sessionKey` orqali aniqlanadi, shuning uchun like yo'qolmaydi.
+  // Mijozlar fikriga 👍 / 👎 reaksiyalari. Login qilmagan mijoz `sessionKey`
+  // orqali aniqlanadi, shuning uchun reaksiya yo'qolmaydi.
+  if (module === "reviews" && operation === "reactions") {
+    const rows = await allReactionRows();
+    const sessionKey = args.sessionKey ? String(args.sessionKey) : null;
+    const counts = {};
+    const mine = {};
+    for (const row of rows) {
+      const kind = reactionKind(row);
+      const entry = counts[row.reviewId] || { like: 0, dislike: 0 };
+      entry[kind] += 1;
+      counts[row.reviewId] = entry;
+      if ((userId && row.userId === userId) || (sessionKey && row.sessionKey === sessionKey)) mine[row.reviewId] = kind;
+    }
+    return { counts, mine };
+  }
+  if (module === "reviews" && operation === "toggleReaction") {
+    const reviewId = String(args.reviewId || "");
+    if (!reviewId) throw new Error("reviewId kerak");
+    const kind = args.kind === "dislike" ? "dislike" : "like";
+    const sessionKey = args.sessionKey ? String(args.sessionKey) : null;
+    const isMine = (row) => (userId && row.userId === userId) || (sessionKey && row.sessionKey === sessionKey);
+    const existing = (await allReactionRows()).find((row) => row.reviewId === reviewId && isMine(row));
+    let mine = null;
+    if (existing) {
+      await db.run("DELETE FROM records WHERE id = ?", existing._id);
+      if (reactionKind(existing) !== kind) {
+        await record("review_reaction", { reviewId, sessionKey, kind }, userId);
+        mine = kind;
+      }
+    } else {
+      await record("review_reaction", { reviewId, sessionKey, kind }, userId);
+      mine = kind;
+    }
+    const counts = { like: 0, dislike: 0 };
+    for (const row of await allReactionRows()) {
+      if (row.reviewId === reviewId) counts[reactionKind(row)] += 1;
+    }
+    return { reviewId, mine, counts };
+  }
   if (module === "plans" && operation === "mine") return await records("plan", userId);
   if (module === "plans" && operation === "latestBySession") return (await records("plan")).find((item) => item.sessionKey === args.sessionKey) || null;
   if (module === "plans" && operation === "choose") return { ok: true, chosenIndex: args.chosenIndex };
@@ -178,9 +257,6 @@ async function dispatch(module, operation, args, req) {
   if (module === "payments" && ["confirm", "refund"].includes(operation)) return { ok: true, alreadyPaid: false };
   if (module === "payments" && operation === "startSubscription") return { paymentId: randomUUID(), reference: reference("SUB"), amount: 0 };
   if (module === "paymentGateway" && operation === "createCheckout") return { configured: false, url: null, message: "Mahalliy rejimda to'lov shlyuzi sozlanmagan." };
-  if (module === "discountCards" && operation === "tiers") return [];
-  if (module === "discountCards" && operation === "active") return null;
-  if (module === "discountCards" && operation === "purchase") return { paymentId: randomUUID(), reference: reference("CARD"), amount: 0, tier: args.tier, design: args.design };
   if (module === "reviews" && ["mine", "recent", "adminList", "forPackage", "forProvider"].includes(operation)) return [];
   if (module === "reviews" && operation === "create") return { reviewId: randomUUID() };
   if (module === "telegram" && operation === "config") return telegramConfig();

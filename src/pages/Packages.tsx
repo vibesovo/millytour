@@ -22,6 +22,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { PageHero, Container } from "@/components/site";
 import { CategoryTabs, TourCard } from "@/components/tour";
+import { filterByKind, kindLabel, splitByKind, type TourKind } from "@/lib/tours";
 import { ForYouRow } from "@/components/for-you";
 import { EventsSection } from "@/components/events";
 import { AiSection } from "@/components/ai-section";
@@ -29,6 +30,7 @@ import { PriceInline } from "@/lib/currency";
 import {
   CITIES,
   DURATIONS,
+  PARTNER_BOT_USERNAME,
   SERVICES,
   TOUR_CATEGORIES,
   partnerBotLink,
@@ -218,6 +220,7 @@ export default function Packages() {
   const days = params.get("days") ?? "";
   const guests = params.get("guests") ?? "2";
   const service = (params.get("service") ?? "") as ServiceId | "";
+  const kind = (params.get("kind") ?? "") as TourKind | "";
   const sort = (params.get("sort") ?? "popular") as (typeof SORTS)[number]["id"];
 
   const update = (patch: Record<string, string | null>) => {
@@ -234,19 +237,29 @@ export default function Packages() {
 
   const { packages } = usePackages();
 
+  // Tur turi: bitta shaharli paketlar va 2-3 shaharli yo'nalishlar.
+  const kindCounts = useMemo(() => {
+    const { packages: single, directions } = splitByKind(packages);
+    return { package: single.length, direction: directions.length };
+  }, [packages]);
+
   const counts = useMemo(() => {
-    const result: Partial<Record<CategoryId, number>> = { all: packages.length };
+    const scoped = filterByKind(packages, kind);
+    const result: Partial<Record<CategoryId, number>> = { all: scoped.length };
     for (const cat of TOUR_CATEGORIES) {
       if (cat.id === "all") {
         continue;
       }
-      result[cat.id] = packages.filter((t) => t.category === cat.id).length;
+      result[cat.id] = scoped.filter((t) => t.category === cat.id).length;
     }
     return result;
-  }, [packages]);
+  }, [packages, kind]);
 
   const tours = useMemo(() => {
-    let list = packages.filter((t) => (category === "all" ? true : t.category === category));
+    let list = filterByKind(
+      packages.filter((t) => (category === "all" ? true : t.category === category)),
+      kind,
+    );
     if (city) {
       list = list.filter((t) => t.city.includes(city) || t.region.includes(city));
     }
@@ -267,9 +280,10 @@ export default function Packages() {
       default:
         return [...list].sort((a, b) => b.reviews - a.reviews);
     }
-  }, [packages, category, city, days, sort]);
+  }, [packages, category, city, days, kind, sort]);
 
   const activeFilters = [
+    kind ? { label: `Turi: ${kindLabel(kind)}`, clear: () => update({ kind: null }) } : null,
     city ? { label: `Shahar: ${city}`, clear: () => update({ city: null }) } : null,
     days ? { label: `Davomiylik: ${days}`, clear: () => update({ days: null }) } : null,
     service
@@ -283,9 +297,9 @@ export default function Packages() {
   return (
     <>
       <PageHero
-        eyebrow="Tur paketlar"
-        title="Barcha tur paketlar — turkumlar bo'yicha tanlang"
-        description="Tarixiy shaharlar, ekoturizm, hunarmandchilik, ziyorat va sarguzasht yo'nalishlari. Har bir paketda turar joy, transport va gid aniq ko'rsatilgan."
+        eyebrow="Tur paketlar va yo'nalishlar"
+        title="Barcha turlar — turi va turkumi bo'yicha tanlang"
+        description="Tur paketi — bitta shahar yoki hududga qaratilgan dastur. Yo'nalish — 2-3 shaharni birlashtirgan katta tur. Har bir kartochkada manzil, kunlar, reyting va narx ko'rsatilgan."
       >
         <div className="flex flex-wrap gap-2">
           {TOUR_CATEGORIES.slice(1).map((cat) => (
@@ -296,7 +310,7 @@ export default function Packages() {
               className={cn(
                 "rounded-full border px-3.5 py-1.5 text-xs font-semibold transition-colors",
                 category === cat.id
-                  ? "border-transparent bg-white text-[#17231d]"
+                  ? "border-transparent bg-white text-foreground"
                   : "border-white/20 bg-white/10 text-white/85 hover:bg-white/20",
               )}
             >
@@ -322,6 +336,19 @@ export default function Packages() {
           </div>
 
           <div className="mt-4 flex flex-wrap items-center gap-2 border-t pt-4">
+            <label className="flex items-center gap-2">
+              <span className="text-xs font-semibold text-muted-foreground">Turi</span>
+              <select
+                value={kind}
+                onChange={(e) => update({ kind: e.target.value })}
+                className={selectCls}
+              >
+                <option value="">Barchasi ({packages.length})</option>
+                <option value="package">Tur paket · bitta shahar ({kindCounts.package})</option>
+                <option value="direction">Yo'nalish · 2-3 shahar ({kindCounts.direction})</option>
+              </select>
+            </label>
+
             <label className="flex items-center gap-2">
               <span className="text-xs font-semibold text-muted-foreground">Shahar</span>
               <select
@@ -493,7 +520,8 @@ export default function Packages() {
                 </h3>
                 <p className="text-sm leading-6 text-muted-foreground">
                   Gid, transfer, restoran, tarjimon, fotograf, hunarmand, mehmonxona yoki boshqa
-                  turizm xizmati egasi bo'lsangiz — millytour_bot orqali ro'yxatdan o'tib, o'z
+                  turizm xizmati egasi bo'lsangiz — {PARTNER_BOT_USERNAME} orqali ro'yxatdan o'tib,
+                  o'z
                   boshqaruv panelingizni oling.
                 </p>
                 <Button variant="outline" className="mt-1 self-start" asChild>

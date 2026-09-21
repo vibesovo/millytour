@@ -5,11 +5,15 @@
   "type": "module",
   "scripts": {
     "dev": "node server/dev.mjs",
+    "dev:admin": "node server/dev.mjs --panel=admin",
+    "dev:partner": "node server/dev.mjs --panel=partner",
     "build": "tsc -b && vite build",
     "typecheck": "tsc -b",
     "lint": "eslint .",
     "format": "prettier --write .",
     "preview": "vite preview",
+    "audit:ui": "node scripts/ui-audit.mjs",
+    "audit:admin": "node scripts/ui-audit.mjs --admin --base=http://127.0.0.1:3000",
     "ai:setup": "node scripts/ai-setup.mjs"
   },
   "dependencies": {
@@ -92,5 +96,9 @@
     "typescript": "~5.9.3",
     "typescript-eslint": "^8.48.1",
     "vite": "^7.2.6"
+  },
+  "allowScripts": {
+    "esbuild@0.27.0": true,
+    "sqlite3@5.1.7": true
   }
 }

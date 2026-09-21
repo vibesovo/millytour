@@ -9,8 +9,8 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { Container, PageHero } from "@/components/site";
-import { PriceInline } from "@/lib/currency";
-import { PRODUCTS, partnerBotLink, type Product } from "@/data/catalog";
+import { Price } from "@/lib/currency";
+import { PARTNER_BOT_USERNAME, PRODUCTS, partnerBotLink, type Product } from "@/data/catalog";
 import { cn } from "@/lib/utils";
 
 type MarketItem = {
@@ -154,7 +154,7 @@ export default function Marketplace() {
                     Qo'lda tayyorlangan · {item.handmadeDays} kun
                   </p>
                   <div className="mt-auto flex items-center justify-between pt-3">
-                    <PriceInline usd={item.price} />
+                    <Price usd={item.price} className="text-[15px]" />
                     <Button
                       size="sm"
                       variant="outline"
@@ -180,7 +180,7 @@ export default function Marketplace() {
           <aside className="flex flex-col gap-4">
             <Card className="relative overflow-hidden border-gold/30 bg-gold/10">
               <CardContent className="flex flex-col items-start gap-3 py-6">
-                <span className="inline-flex items-center gap-2 rounded-full bg-white/70 px-3 py-1 text-[11px] font-bold tracking-wide text-[#8a5a00] uppercase">
+                <span className="inline-flex items-center gap-2 rounded-full bg-white/70 px-3 py-1 text-[11px] font-bold tracking-wide text-gold-ink uppercase">
                   <Sparkles className="size-3.5" aria-hidden="true" />
                   Hunarmandlarga
                 </span>
@@ -188,7 +188,7 @@ export default function Marketplace() {
                   O'z ustaxonangizni onlayn do'konga aylantiring
                 </h2>
                 <p className="text-sm leading-6 text-muted-foreground">
-                  millytour_bot orqali ro'yxatdan o'ting, mahsulotlarni botga yuboring —
+                  {PARTNER_BOT_USERNAME} orqali ro'yxatdan o'ting, mahsulotlarni botga yuboring —
                   moderatsiyadan so'ng do'koningiz shu yerda chiqadi. Oylik obuna $19.
                 </p>
                 <Button className="self-start" asChild>

@@ -22,7 +22,6 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { PatternOverlay } from "@/components/brand";
 import { CITIES, TOUR_PACKAGES } from "@/data/catalog";
 import {
   INTEREST_OPTIONS,
@@ -33,7 +32,13 @@ import {
   type PlannerAnswers,
 } from "@/lib/planner";
 import { useAuth } from "@/hooks/use-auth";
-import { PriceInline } from "@/lib/currency";
+import {
+  recommendFromAnswers,
+  recommendationReply,
+  toRecommendationContext,
+  type PackageRecommendation,
+} from "@/lib/ai-recommend";
+import { formatPrimary, Price, PriceInline } from "@/lib/currency";
 import { cn } from "@/lib/utils";
 
 type Specialist = {
@@ -81,9 +86,56 @@ type ChatMessage =
     }
   | { id: string; role: "chosen"; plan: Plan; index: number; engine: "ai" | "rule-based" }
   | { id: string; role: "booked"; result: BookResult }
+  | { id: string; role: "packages"; recommendations: PackageRecommendation[] }
   | { id: string; role: "offer"; offer: OfferPayload };
 
 type Phase = "questions" | "options" | "feedback" | "booking" | "done";
+
+/**
+ * Milly AI tavsiyasi — faqat katalogdagi mavjud tur paketlar, narx bo'yicha
+ * saralangan. Tashqi AI modeli bu ro'yxatni o'zgartirmaydi, u faqat matn yozadi.
+ */
+function RecommendedPackages({
+  recommendations,
+}: {
+  recommendations: PackageRecommendation[];
+}) {
+  if (recommendations.length === 0) return null;
+  return (
+    <div className="space-y-2">
+      <p className="flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
+        <Sparkles className="size-3.5 text-primary" aria-hidden="true" />
+        Katalogdagi mavjud paketlar · narx bo'yicha
+      </p>
+      {recommendations.map(({ tour, perPerson, total, reason }) => (
+        <Link
+          key={tour.slug}
+          to={`/paketlar/${tour.slug}`}
+          className="flex gap-3 rounded-2xl border bg-card p-2.5 transition-colors hover:border-primary/40 hover:bg-primary/5"
+        >
+          <img
+            src={tour.image}
+            alt={tour.alt}
+            loading="lazy"
+            decoding="async"
+            className="size-16 shrink-0 rounded-xl object-cover"
+          />
+          <div className="min-w-0 flex-1">
+            <p className="line-clamp-1 text-[13px] font-semibold text-foreground">{tour.title}</p>
+            <p className="text-[11px] text-muted-foreground">
+              {tour.city} · {tour.days} kun / {tour.nights} kecha
+            </p>
+            <p className="mt-0.5 text-[11px] leading-4 text-primary">{reason}</p>
+            <div className="mt-1 flex flex-wrap items-end gap-x-3 gap-y-0.5">
+              <Price usd={perPerson} suffix="/kishi" className="text-[13px]" />
+              <span className="text-[11px] text-muted-foreground">jami {formatPrimary(total)}</span>
+            </div>
+          </div>
+        </Link>
+      ))}
+    </div>
+  );
+}
 
 const PAY_OPTIONS = [
   { id: "payme", label: "Payme" },
@@ -323,6 +375,16 @@ export function PlannerChat({ variant }: { variant: "widget" | "page" }) {
               "2-variant — tejamkor (ko'proq shahar va nuqta, arzon turar joy).\n\n" +
               "Qaysi birini ma'qul ko'rasiz? Variantni tanlang yoki istaklaringizni yozing.",
       });
+      // Katalogdagi mavjud paketlar — narxga qarab tavsiya (AI kaliti kerak emas).
+      const recommendations = recommendFromAnswers(payload, { limit: 3 });
+      if (recommendations.length > 0) {
+        push({ id: newId(), role: "packages", recommendations });
+        push({
+          id: newId(),
+          role: "bot",
+          text: recommendationReply(recommendations, payload),
+        });
+      }
     } catch (error) {
       console.warn(error);
       // Muhim: savollar bosqichiga qaytish — aks holda input abadiy bloklanadi.
@@ -589,6 +651,9 @@ export function PlannerChat({ variant }: { variant: "widget" | "page" }) {
       const result = await freeChat({
         message: text,
         sessionKey: key,
+        // AI modeli faqat shu ro'yxatdagi paketlarni tavsiya qilishi mumkin —
+        // o'zidan yangi tur yoki narx o'ylab topmaydi.
+        catalog: toRecommendationContext(recommendFromAnswers(answers, { limit: 5 })),
         history: historyRef.current.map((m) => ({
           role: m.role as "user" | "assistant",
           content: m.content,
@@ -753,6 +818,11 @@ export function PlannerChat({ variant }: { variant: "widget" | "page" }) {
                 onChoose={chooseOption}
                 compact={variant === "widget"}
               />
+            );
+          }
+          if (message.role === "packages") {
+            return (
+              <RecommendedPackages key={message.id} recommendations={message.recommendations} />
             );
           }
           if (message.role === "chosen") {
@@ -1219,13 +1289,12 @@ function BookingResultCard({
       transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
       className="relative overflow-hidden rounded-2xl border bg-card"
     >
-      <PatternOverlay opacityClass="opacity-[0.04]" />
       <div className="relative space-y-3 p-4">
         <div className="flex flex-wrap items-center justify-between gap-2">
           <span className="inline-flex items-center gap-1.5 text-[11px] font-bold tracking-wide text-eco uppercase">
             <BadgeCheck className="size-3.5" aria-hidden="true" />
             Bron tasdiqlandi · {result.reference}
-          </span>                  <Badge className="border-0 bg-gold/20 text-[#8a5a00]">
+          </span>                  <Badge className="border-0 bg-gold/20 text-gold-ink">
                     To'lov: <PriceInline usd={result.totalPrice} />
                   </Badge>
         </div>
@@ -1335,7 +1404,6 @@ export function PlanResult({
       transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
       className="relative overflow-hidden rounded-2xl border bg-card"
     >
-      <PatternOverlay opacityClass="opacity-[0.04]" />
       <div className="relative">
         <div className="flex items-start justify-between gap-3 border-b bg-primary/5 px-4 py-3">
           <div>
@@ -1368,7 +1436,7 @@ export function PlanResult({
                   "border-0",
                   plan.estimate.withinBudget
                     ? "bg-eco/15 text-eco"
-                    : "bg-gold/20 text-[#8a5a00]",
+                    : "bg-gold/20 text-gold-ink",
                 )}
               >
                 {plan.estimate.withinBudget ? "Byudjetga mos" : "Byudjetdan yuqori"}
@@ -1463,7 +1531,7 @@ export function PlanResult({
                     </p>
                   </div>
                   <span className="shrink-0 text-[13px] font-bold text-foreground">
-                    <PriceInline usd={tour.priceFrom} />
+                    <Price usd={tour.priceFrom} />
                   </span>
                 </Link>
               ))}

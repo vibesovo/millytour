@@ -25,7 +25,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Container, PageHero } from "@/components/site";
 import { openMillyAi } from "@/components/AiAssistant";
 import { ServiceOrderForm, type BookableService } from "@/components/service-order-form";
-import { partnerBotLink, type Direction } from "@/data/catalog";
+import { PARTNER_BOT_USERNAME, partnerBotLink, type Direction } from "@/data/catalog";
 import { SERVICE_PAGES, slugForDirection } from "@/data/service-pages";
 
 const ICONS: Record<Direction, React.ElementType> = {
@@ -160,7 +160,7 @@ export default function Services() {
                       decoding="async"
                       className="aspect-[16/9] w-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-[#17231d]/75 via-transparent" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-ink/75 via-transparent" />
                     <span className="absolute bottom-3 left-3 inline-flex items-center gap-1.5 rounded-full bg-white/15 px-2.5 py-1 text-[11px] font-semibold text-white backdrop-blur-sm">
                       <Icon className="size-3.5 text-gold" aria-hidden="true" />
                       {page.label}
@@ -227,7 +227,7 @@ export default function Services() {
                   Hozircha tasdiqlangan mutaxassis yo'q
                 </p>
                 <p className="max-w-md text-sm text-muted-foreground">
-                  Mutaxassislar millytour_bot orqali ro'yxatdan o'tadi va administrator
+                  Mutaxassislar {PARTNER_BOT_USERNAME} orqali ro'yxatdan o'tadi va administrator
                   tasdiqlagach shu ro'yxatda chiqadi.
                 </p>
                 <div className="mt-1 flex flex-wrap justify-center gap-2">
@@ -273,7 +273,7 @@ export default function Services() {
                           {p.capacity ? <span>{p.capacity}</span> : null}
                         </p>
                       </div>
-                      <span className="inline-flex shrink-0 items-center gap-1 rounded-full bg-gold/15 px-2.5 py-1 text-[12px] font-bold text-[#8a5a00]">
+                      <span className="inline-flex shrink-0 items-center gap-1 rounded-full bg-gold/15 px-2.5 py-1 text-[12px] font-bold text-gold-ink">
                         <Star className="size-3.5 fill-gold text-gold" aria-hidden="true" />
                         {p.rating.toFixed(1)}
                       </span>

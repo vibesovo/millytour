@@ -69,29 +69,6 @@ export function MillytourLogo({
   );
 }
 
-/** Geometrik islomiy naqsh — fon uchun juda nozik (5–8% opacity). */
-export function PatternOverlay({
-  className,
-  tone = "blue",
-  opacityClass = "opacity-[0.06]",
-}: {
-  className?: string;
-  tone?: "blue" | "gold";
-  opacityClass?: string;
-}) {
-  return (
-    <div
-      aria-hidden="true"
-      className={cn(
-        "pointer-events-none absolute inset-0 bg-repeat",
-        tone === "blue" ? "pattern-uz" : "pattern-uz-gold",
-        opacityClass,
-        className,
-      )}
-    />
-  );
-}
-
 export function Rating({
   value,
   reviews,

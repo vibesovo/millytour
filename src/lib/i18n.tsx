@@ -23,6 +23,13 @@ const DICT = {
   nav_packages: { uz: "Tur paketlar", ru: "Туры", en: "Tours" },
   nav_services: { uz: "Xizmatlar", ru: "Услуги", en: "Services" },
   nav_market: { uz: "Hunarmandlar", ru: "Ремесленники", en: "Artisans" },
+  nav_destinations: { uz: "Yo'nalishlar", ru: "Направления", en: "Destinations" },
+  nav_deals: { uz: "Takliflar", ru: "Акции", en: "Deals" },
+  tour_menu_label: {
+    uz: "Tur paketlar va yo'nalishlar",
+    ru: "Туры и направления",
+    en: "Tours & destinations",
+  },
   nav_partners: { uz: "Hamkorlik", ru: "Сотрудничество", en: "Partnership" },
   nav_signin: { uz: "Kirish", ru: "Войти", en: "Sign in" },
   nav_account: { uz: "Kabinet", ru: "Кабинет", en: "Account" },

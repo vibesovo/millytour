@@ -1,33 +1,26 @@
 import { useMemo, useState } from "react";
 import { motion } from "framer-motion";
 import { Link, useNavigate } from "react-router";
-import { DiscountCardsSection } from "@/components/discount-cards";
 import {
   ArrowRight,
   BadgeCheck,
   BedDouble,
-  CalendarDays,
   Camera,
   CarFront,
   Check,
   Clock,
-  CreditCard,
   Languages,
   MapPin,
-  MessageSquareText,
   Search,
   ShieldCheck,
   Sparkles,
-  Star,
   Store,
   Ticket,
   UserRound,
   Users,
   UtensilsCrossed,
-  Compass,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import {
   Carousel,
   CarouselContent,
@@ -35,25 +28,26 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
-import { PatternOverlay, SectionHeading } from "@/components/brand";
-import { CategoryTabs, TourCard } from "@/components/tour";
+import { SectionHeading } from "@/components/brand";
+import { HeroCards } from "@/components/hero-cards";
+import { DealsTeaser } from "@/components/top-deals";
+import { AdvantagesBand } from "@/components/advantages";
+import { TourCard, TourKindTabs } from "@/components/tour";
 import { Container } from "@/components/site";
+import { Price } from "@/lib/currency";
+import { cn } from "@/lib/utils";
+import { TOUR_KINDS, filterByKind, splitByKind, type TourKind } from "@/lib/tours";
 import { AiSection } from "@/components/ai-section";
-import { openMillyAi } from "@/components/AiAssistant";
-import { TourDetailModal } from "@/components/TourDetailModal";
-import { EventsSection } from "@/components/events";
-import { ForYouRow } from "@/components/for-you";
 import {
   CITIES,
   DURATIONS,
   PRODUCTS,
   TOUR_CATEGORIES,
   TOUR_PACKAGES,
-  TESTIMONIALS,
+  PARTNER_BOT_USERNAME,
   partnerBotLink,
   type CategoryId,
 } from "@/data/catalog";
-import { cn } from "@/lib/utils";
 
 const blurFade = {
   initial: { opacity: 0, y: 24 },
@@ -66,11 +60,7 @@ const blurFade = {
 
 function Hero() {
   return (
-    <section className="relative min-h-[600px] overflow-hidden bg-gradient-to-br from-[#0F1B3D] via-[#1F5BFF] to-[#2563EB] text-white">
-      <div className="absolute inset-0 bg-gradient-to-r from-[#0F1B3D]/70 via-transparent to-transparent" />
-      <div className="absolute inset-0 bg-gradient-to-t from-[#0F1B3D]/50 via-transparent to-transparent" />
-      <PatternOverlay tone="gold" opacityClass="opacity-[0.05]" />
-
+    <section className="relative min-h-[600px] overflow-hidden bg-background text-foreground">
       <Container className="relative flex min-h-[600px] items-center pb-36 pt-16 sm:pt-20 lg:pb-44">
         <div className="flex max-w-xl flex-col items-start text-left">
           <motion.div
@@ -78,15 +68,18 @@ function Hero() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
           >
-            <span className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-4 py-1.5 text-xs font-semibold tracking-wide text-white/90 backdrop-blur-sm">
-              <Sparkles className="size-3.5 text-gold" aria-hidden="true" />
+            <span className="inline-flex items-center gap-2 rounded-full border border-primary/15 bg-primary/5 px-4 py-1.5 text-xs font-semibold tracking-wide text-primary">
+              <span className="relative flex size-2" aria-hidden="true">
+                <span className="absolute inline-flex size-full animate-ping rounded-full bg-gold opacity-70" />
+                <span className="relative inline-flex size-2 rounded-full bg-gold" />
+              </span>
               O'zbekiston — Buyuk Ipak yo'lining yuragi
             </span>
             <h1 className="mt-6 max-w-2xl text-[38px] leading-[42px] font-extrabold tracking-tight sm:text-[58px] sm:leading-[60px]">
               O'zbekistonni kashf eting,
               <span className="block script-accent text-3xl font-normal italic sm:text-5xl"> xotiralar yarating</span>
             </h1>
-            <p className="mt-5 max-w-lg text-base leading-6 text-white/85 sm:text-lg sm:leading-7">
+            <p className="mt-5 max-w-lg text-base leading-6 text-muted-foreground sm:text-lg sm:leading-7">
               Tasdiqlangan tur paketlar, Milly AI tuzgan shaxsiy dastur va mahalliy mutaxassislar
               (gid, transfer, mehmonxona, tarjimon, fotograf) — bitta joyda.
             </p>
@@ -97,19 +90,14 @@ function Hero() {
                   <ArrowRight className="size-4 ml-1.5" aria-hidden="true" />
                 </Link>
               </Button>
-              <Button
-                size="lg"
-                variant="outline"
-                className="border-white/30 bg-white/10 text-white backdrop-blur-sm hover:bg-white/20 hover:text-white"
-                asChild
-              >
+              <Button size="lg" variant="outline" asChild>
                 <Link to="/xizmatlar">
                   Xizmatlarni ko'rish
                   <ArrowRight className="size-4 ml-1.5" aria-hidden="true" />
                 </Link>
               </Button>
             </div>
-            <ul className="mt-8 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-[13px] text-white/70">
+            <ul className="mt-8 flex flex-wrap items-center gap-x-6 gap-y-2 text-[13px] text-muted-foreground">
               {["Tasdiqlangan hamkorlar", "Aniq narx", "Xavfsiz to'lov"].map((item) => (
                 <li key={item} className="inline-flex items-center gap-1.5">
                   <Check className="size-3.5 text-gold" aria-hidden="true" />
@@ -117,51 +105,41 @@ function Hero() {
                 </li>
               ))}
             </ul>
+
+            <dl className="mt-9 grid w-full max-w-md grid-cols-3 gap-3 border-t pt-6">
+              {[
+                { value: "120+", label: "Tur paket" },
+                { value: "12 400", label: "Sayohatchi" },
+                { value: "4.9", label: "O'rtacha baho" },
+              ].map((stat) => (
+                <div key={stat.label}>
+                  <dt className="text-[22px] leading-7 font-extrabold text-foreground sm:text-[26px]">
+                    {stat.value}
+                  </dt>
+                  <dd className="mt-0.5 text-[11.5px] tracking-wide text-muted-foreground uppercase">
+                    {stat.label}
+                  </dd>
+                </div>
+              ))}
+            </dl>
           </motion.div>
         </div>
 
+        {/* Avtomatik aylanadigan kartochkalar — o'ng/chapdagilari orqada turadi */}
         <motion.div
           initial={{ opacity: 0, x: 24 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.7, delay: 0.15 }}
-          className="absolute right-6 top-1/2 hidden -translate-y-1/2 rounded-[22px] border border-white/30 bg-white/10 p-5 shadow-float backdrop-blur-xl lg:block xl:right-14"
+          className="absolute top-1/2 right-0 hidden -translate-y-1/2 xl:block"
         >
-          <p className="text-xs font-bold tracking-wide text-accent uppercase">Maxsus taklif</p>
-          <p className="mt-2 text-3xl font-extrabold text-white">30% OFF</p>
-          <p className="mt-1 max-w-[150px] text-xs leading-5 text-white/70">Milly Card bilan barcha bronlarda tejang</p>
-          <Link to="/paketlar" className="mt-4 inline-flex text-xs font-bold text-white hover:text-gold">
-            Takliflarni ko'rish <ArrowRight className="ml-1 size-3.5" />
-          </Link>
+          <HeroCards />
         </motion.div>
-
-        <div aria-hidden="true" className="absolute bottom-20 right-[28%] hidden opacity-25 lg:block">
-          <svg width="80" height="80" viewBox="0 0 100 100" fill="none">
-            <path d="M10 90 L90 50 L10 90 Z" fill="white" opacity="0.6" />
-            <path d="M10 90 L50 45 L90 50" stroke="white" strokeWidth="2" opacity="0.4" />
-          </svg>
-        </div>
-        <div aria-hidden="true" className="absolute top-16 right-[15%] hidden opacity-20 lg:block">
-          <svg width="50" height="50" viewBox="0 0 50 50" fill="none">
-            <ellipse cx="25" cy="25" rx="22" ry="8" stroke="white" strokeWidth="1.5" opacity="0.5" />
-            <ellipse cx="25" cy="25" rx="22" ry="8" stroke="white" strokeWidth="1.5" opacity="0.3" transform="rotate(30 25 25)" />
-            <ellipse cx="25" cy="25" rx="22" ry="8" stroke="white" strokeWidth="1.5" opacity="0.2" transform="rotate(60 25 25)" />
-          </svg>
-        </div>
       </Container>
     </section>
   );
 }
 
 /* ------------------------------ qidiruv paneli ------------------------------ */
-
-const SERVICE_SHORTCUTS = [
-  { label: "Gid xizmati", icon: UserRound, to: "/paketlar?service=guide" },
-  { label: "Transfer", icon: CarFront, to: "/paketlar?service=transfer" },
-  { label: "Mehmonxona", icon: BedDouble, to: "/paketlar?service=hotel" },
-  { label: "Tarjimon", icon: Languages, to: "/paketlar?service=translator" },
-  { label: "Fotograf", icon: Camera, to: "/paketlar?service=photographer" },
-  { label: "Hunarmandlar", icon: Store, to: "/hunarmandlar" },
-];
 
 function SearchField({
   label,
@@ -173,9 +151,9 @@ function SearchField({
   children: React.ReactNode;
 }) {
   return (
-    <label className="block rounded-xl bg-muted/60 px-3 py-2 transition-shadow focus-within:bg-card focus-within:ring-[3px] focus-within:ring-ring/40">
-      <span className="flex items-center gap-1.5 text-[11px] font-semibold tracking-wide text-muted-foreground uppercase">
-        <Icon className="size-3.5" aria-hidden="true" />
+    <label className="block rounded-lg bg-muted/60 px-2.5 py-1.5 transition-shadow focus-within:bg-card focus-within:ring-[3px] focus-within:ring-ring/40">
+      <span className="flex items-center gap-1.5 text-[10.5px] font-semibold tracking-wide text-muted-foreground uppercase">
+        <Icon className="size-3" aria-hidden="true" />
         {label}
       </span>
       {children}
@@ -184,20 +162,33 @@ function SearchField({
 }
 
 const selectCls =
-  "w-full border-0 bg-transparent p-0 pt-0.5 text-sm font-semibold text-foreground outline-none";
+  "w-full border-0 bg-transparent p-0 pt-0.5 text-[13.5px] font-semibold text-foreground outline-none";
 
+/** Turkumlar bo'yicha paketlar soni — qidiruvdagi tugmalarda ko'rsatiladi. */
+const CATEGORY_COUNTS: Partial<Record<CategoryId, number>> = (() => {
+  const result: Partial<Record<CategoryId, number>> = { all: TOUR_PACKAGES.length };
+  for (const cat of TOUR_CATEGORIES) {
+    if (cat.id === "all") {
+      continue;
+    }
+    result[cat.id] = TOUR_PACKAGES.filter((tour) => tour.category === cat.id).length;
+  }
+  return result;
+})();
+
+/**
+ * Ixcham qidiruv: turkum tugmalari ustida, ostida shahar / kunlar / odam.
+ *
+ * Turkum — tur paketlarning asosiy bo'linishi (tarixiy shaharlar, ekoturizm va
+ * tabiat, hunarmandchilik, ziyorat, sarguzasht). "Barchasi" tanlansa `category`
+ * parametri yuborilmaydi va /paketlar barcha paketlarni ko'rsatadi.
+ */
 function SearchPanel() {
   const navigate = useNavigate();
-  const [category, setCategory] = useState<CategoryId>("all");
   const [city, setCity] = useState<string>(CITIES[1]);
+  const [category, setCategory] = useState<CategoryId>("all");
   const [days, setDays] = useState<string>(DURATIONS[1]);
   const [guests, setGuests] = useState<string>("2");
-
-  const searchWithAi = () => {
-    const params = { city, days, guests, category: category !== "all" ? category : undefined };
-    sessionStorage.setItem("millytour.ai.search", JSON.stringify(params));
-    openMillyAi();
-  };
 
   return (
     <section id="qidiruv" aria-label="Sayohat qidiruvi">
@@ -205,11 +196,11 @@ function SearchPanel() {
         onSubmit={(e) => {
           e.preventDefault();
           const params = new URLSearchParams();
-          if (category !== "all") {
-            params.set("category", category);
-          }
           if (city) {
             params.set("city", city);
+          }
+          if (category !== "all") {
+            params.set("category", category);
           }
           if (days) {
             params.set("days", days);
@@ -219,11 +210,44 @@ function SearchPanel() {
           }
           navigate(`/paketlar?${params.toString()}`);
         }}
-        className="rounded-2xl border border-white/40 bg-white/80 p-3 shadow-lifted backdrop-blur-xl sm:p-4"
+        className="rounded-2xl border bg-card p-2 shadow-lifted sm:p-2.5"
       >
-        <CategoryTabs value={category} onChange={setCategory} className="mb-3" />
+        {/* Turkum tugmalari — maydonlar ustida, tanlov bir bosishda o'zgaradi */}
+        <div
+          role="group"
+          aria-label="Turkum tanlash"
+          className="no-scrollbar -mx-1 flex gap-1.5 overflow-x-auto px-1 pb-1.5"
+        >
+          {TOUR_CATEGORIES.map((cat) => {
+            const active = cat.id === category;
+            return (
+              <button
+                key={cat.id}
+                type="button"
+                aria-pressed={active}
+                onClick={() => setCategory(cat.id)}
+                className={cn(
+                  "inline-flex shrink-0 items-center gap-1.5 rounded-full border px-3.5 py-1.5 text-[13px] font-semibold transition-colors",
+                  active
+                    ? "border-primary bg-primary text-primary-foreground"
+                    : "border-border bg-card text-muted-foreground hover:border-primary/30 hover:text-foreground",
+                )}
+              >
+                {cat.short}
+                <span
+                  className={cn(
+                    "rounded-full px-1.5 py-0.5 text-[10.5px] font-bold",
+                    active ? "bg-white/20 text-white" : "bg-muted text-muted-foreground",
+                  )}
+                >
+                  {CATEGORY_COUNTS[cat.id] ?? 0}
+                </span>
+              </button>
+            );
+          })}
+        </div>
 
-        <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-[1.1fr_1fr_1fr_1fr_auto]">
+        <div className="grid grid-cols-1 gap-1.5 sm:grid-cols-2 lg:grid-cols-[1.2fr_1fr_1fr_auto]">
           <SearchField label="Shahar" icon={MapPin}>
             <select name="city" value={city} onChange={(e) => setCity(e.target.value)} className={selectCls}>
               {CITIES.map((c) => (
@@ -233,15 +257,7 @@ function SearchPanel() {
               ))}
             </select>
           </SearchField>
-          <SearchField label="Sana" icon={CalendarDays}>
-            <Input
-              type="date"
-              name="date"
-              defaultValue="2026-10-03"
-              className="h-auto border-0 bg-transparent p-0 pt-0.5 text-sm font-semibold shadow-none"
-            />
-          </SearchField>
-          <SearchField label="Kunlar soni" icon={Clock}>
+          <SearchField label="Kunlar" icon={Clock}>
             <select name="days" value={days} onChange={(e) => setDays(e.target.value)} className={selectCls}>
               {DURATIONS.map((d) => (
                 <option key={d} value={d}>
@@ -250,7 +266,7 @@ function SearchPanel() {
               ))}
             </select>
           </SearchField>
-          <SearchField label="Odam soni" icon={Users}>
+          <SearchField label="Odam" icon={Users}>
             <select name="guests" value={guests} onChange={(e) => setGuests(e.target.value)} className={selectCls}>
               {[1, 2, 3, 4, 5, 6].map((n) => (
                 <option key={n} value={n}>
@@ -259,28 +275,10 @@ function SearchPanel() {
               ))}
             </select>
           </SearchField>
-          <Button type="submit" size="lg" className="lg:h-full lg:px-8">
+          <Button type="submit" size="lg" className="h-full px-6">
             <Search className="size-4" aria-hidden="true" />
             Qidirish
           </Button>
-          <Button type="button" size="lg" variant="secondary" className="lg:h-full lg:px-8 bg-eco hover:bg-eco/90 text-white" onClick={searchWithAi}>
-            <Sparkles className="size-4" aria-hidden="true" />
-            AI bilan qidirish
-          </Button>
-        </div>
-
-        <div className="mt-3 flex flex-wrap items-center gap-2 border-t border-gray-200/60 pt-3">
-          <span className="text-xs font-semibold text-muted-foreground">Qo'shimcha xizmatlar:</span>
-          {SERVICE_SHORTCUTS.map((s) => (
-            <Link
-              key={s.label}
-              to={s.to}
-              className="inline-flex items-center gap-1.5 rounded-full border bg-card px-3 py-1.5 text-xs font-semibold text-muted-foreground transition-colors hover:border-primary/30 hover:text-primary"
-            >
-              <s.icon className="size-3.5" aria-hidden="true" />
-              {s.label}
-            </Link>
-          ))}
         </div>
       </form>
     </section>
@@ -351,36 +349,32 @@ function HowItWorks() {
 
 /* ------------------------------- tur paketlar ------------------------------- */
 
+/**
+ * Tur paketlar va yo'nalishlar karuseli.
+ *
+ * Turkum bu yerda tanlanmaydi — turkum yuqoridagi qidiruv panelidagi tugmalar
+ * orqali tanlanadi. Bo'limda faqat tur turi (tur paket / yo'nalish) qoladi.
+ */
 function PopularTours() {
-  const [category, setCategory] = useState<CategoryId>("all");
-  const counts = useMemo(() => {
-    const result: Partial<Record<CategoryId, number>> = { all: TOUR_PACKAGES.length };
-    for (const cat of TOUR_CATEGORIES) {
-      if (cat.id === "all") {
-        continue;
-      }
-      result[cat.id] = TOUR_PACKAGES.filter((t) => t.category === cat.id).length;
-    }
-    return result;
+  const [kind, setKind] = useState<TourKind>("package");
+
+  const kindCounts = useMemo(() => {
+    const { packages, directions } = splitByKind(TOUR_PACKAGES);
+    return { package: packages.length, direction: directions.length };
   }, []);
 
-  const tours = useMemo(
-    () =>
-      (category === "all"
-        ? TOUR_PACKAGES
-        : TOUR_PACKAGES.filter((t) => t.category === category)
-      ).slice(0, 6),
-    [category],
-  );
+  const tours = useMemo(() => filterByKind(TOUR_PACKAGES, kind).slice(0, 6), [kind]);
+
+  const activeKind = TOUR_KINDS.find((item) => item.id === kind);
 
   return (
     <section id="turlar" className="scroll-mt-24 py-14 lg:py-20">
       <Container>
         <motion.div {...blurFade} className="flex flex-wrap items-end justify-between gap-6">
           <SectionHeading
-            eyebrow="Tur turkumlari"
-            title="Yo'nalish bo'yicha barcha tur paketlar"
-            description="Tarixiy shaharlar, ekoturizm, hunarmandchilik, ziyorat va sarguzasht turlari — narxlar to'liq kiritilgan, yashirin to'lov yo'q."
+            eyebrow="Turlar"
+            title="Tur paketlar va yo'nalishlar"
+            description="Tur paketi — bitta shahar yoki hududga qaratilgan tayyor dastur. Yo'nalish — 2-3 shaharni birlashtirgan katta tur: barcha manzillar, kunlar va narx kartochkada ko'rsatilgan."
           />
           <Button variant="outline" className="shrink-0" asChild>
             <Link to="/paketlar">
@@ -390,12 +384,25 @@ function PopularTours() {
           </Button>
         </motion.div>
 
-        <motion.div {...blurFade} className="mt-8">
-          <CategoryTabs value={category} onChange={setCategory} counts={counts} />
+        <motion.div {...blurFade} className="mt-8 flex flex-wrap items-center gap-x-4 gap-y-3">
+          <TourKindTabs value={kind} onChange={setKind} counts={kindCounts} />
+          <p className="text-[12.5px] text-muted-foreground">{activeKind?.hint}</p>
         </motion.div>
 
-        <Carousel className="mt-8 w-full">
+        <motion.p {...blurFade} className="mt-3 text-[12.5px] text-muted-foreground">
+          Turkum (tarixiy shaharlar, ekoturizm va tabiat, hunarmandchilik va boshqalar) yuqoridagi
+          qidiruv panelidan tanlanadi — shu yerda takrorlanmaydi.
+        </motion.p>
+
+        <Carousel key={kind} className="mt-8 w-full">
           <CarouselContent className="-ml-4 lg:-ml-6">
+            {tours.length === 0 ? (
+              <CarouselItem className="basis-full pl-4 lg:pl-6">
+                <p className="rounded-2xl border border-dashed bg-muted/40 px-5 py-8 text-center text-[13px] text-muted-foreground">
+                  Bu turda hozircha paket yo'q — boshqa turni tanlang.
+                </p>
+              </CarouselItem>
+            ) : null}
             {tours.map((tour) => (
               <CarouselItem
                 key={tour.id}
@@ -422,48 +429,64 @@ const SERVICES = [
     icon: BedDouble,
     title: "Mehmonxona",
     text: "3* dan butik mehmonxonalargacha — bronlar to'g'ridan-to'g'ri egasidan.",
+    chip: "bg-indigo-500/10 text-indigo-600 dark:text-indigo-400",
+    ink: "text-indigo-600 dark:text-indigo-400",
     to: "/xizmatlar?direction=hotel",
   },
   {
     icon: UtensilsCrossed,
     title: "Restoran",
     text: "Milliy taomlar, guruh uchun stol va gastronomik kechalar.",
+    chip: "bg-orange-500/10 text-orange-600 dark:text-orange-400",
+    ink: "text-orange-600 dark:text-orange-400",
     to: "/xizmatlar?direction=restaurant",
   },
   {
     icon: UserRound,
     title: "Gid",
     text: "Litsenziyali, tillarni biladigan gidlar — kunlik yoki marshrut bo'yicha.",
+    chip: "bg-primary/10 text-primary",
+    ink: "text-primary",
     to: "/xizmatlar?direction=guide",
   },
   {
     icon: CarFront,
     title: "Transfer",
     text: "Aeroport, shaharlararo va shahar ichida tashish. Mashina holati kunlik nazoratda.",
+    chip: "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400",
+    ink: "text-emerald-600 dark:text-emerald-400",
     to: "/xizmatlar?direction=transfer",
   },
   {
     icon: Languages,
     title: "Tarjimon",
     text: "Guruh tili bo'yicha tarjimon — kunma-kun vazifa va aniq mas'ul mutaxassis.",
+    chip: "bg-sky-500/10 text-sky-600 dark:text-sky-400",
+    ink: "text-sky-600 dark:text-sky-400",
     to: "/xizmatlar?direction=translator",
   },
   {
     icon: Camera,
     title: "Fotograf",
     text: "Professional fotosessiya: lokatsiya, vaqt va tayyor suratlar paketi.",
+    chip: "bg-fuchsia-500/10 text-fuchsia-600 dark:text-fuchsia-400",
+    ink: "text-fuchsia-600 dark:text-fuchsia-400",
     to: "/xizmatlar?direction=photographer",
   },
   {
     icon: Ticket,
     title: "Boshqa xizmatlar",
     text: "Sug'urta, chipta, konsulxizmat va turizm sohasidagi boshqa xizmatlar.",
+    chip: "bg-slate-500/10 text-slate-600 dark:text-slate-300",
+    ink: "text-slate-600 dark:text-slate-300",
     to: "/xizmatlar?direction=other",
   },
   {
     icon: Store,
     title: "Hunarmandlar bozori",
     text: "Kulolchilik, atlas va zargarlik buyumlari — ustaxonadan to'g'ridan-to'g'ri.",
+    chip: "bg-teal-500/10 text-teal-600 dark:text-teal-400",
+    ink: "text-teal-600 dark:text-teal-400",
     to: "/hunarmandlar",
   },
 ];
@@ -496,12 +519,16 @@ function ServicesBand() {
                 to={s.to}
                 className="group flex h-full flex-col rounded-2xl border bg-card p-5 transition-all hover:-translate-y-1 hover:shadow-soft"
               >
-                <span className="grid size-11 place-items-center rounded-xl bg-primary/8 text-primary">
+                <span
+                  className={`grid size-11 place-items-center rounded-xl ${s.chip}`}
+                >
                   <s.icon className="size-5" aria-hidden="true" />
                 </span>
                 <h3 className="mt-4 text-[15px] font-semibold text-foreground">{s.title}</h3>
                 <p className="mt-2 flex-1 text-[13px] leading-5 text-muted-foreground">{s.text}</p>
-                <span className="mt-4 inline-flex items-center gap-1.5 text-[13px] font-semibold text-primary">
+                <span
+                  className={`mt-4 inline-flex items-center gap-1.5 text-[13px] font-semibold ${s.ink}`}
+                >
                   Ko'rish
                   <ArrowRight
                     className="size-3.5 transition-transform group-hover:translate-x-0.5"
@@ -566,7 +593,9 @@ function ArtisansTeaser() {
                   <p className="mt-1 text-xs text-muted-foreground">
                     {p.seller} · {p.city}
                   </p>
-                  <p className="mt-auto pt-2.5 text-base font-bold">${p.price}</p>
+                  <div className="mt-auto pt-2.5">
+                    <Price usd={p.price} className="text-[15px]" />
+                  </div>
                 </div>
               </Link>
             </motion.div>
@@ -580,7 +609,7 @@ function ArtisansTeaser() {
 /* ------------------------------- hamkor CTA ------------------------------- */
 
 const PARTNER_PERKS = [
-  "millytour_bot orqali 5 daqiqada ro'yxatdan o'tish",
+  `${PARTNER_BOT_USERNAME} orqali 5 daqiqada ro'yxatdan o'tish`,
   "Buyurtmalar yo'nalishingizga moslab botga tushadi",
   "Reyting, kalendar va to'lovlar bitta panelda",
   "Oylik obuna: $19 dan boshlab",
@@ -596,7 +625,6 @@ function PartnerCta() {
         >
           <div className="absolute inset-0 bg-gradient-to-br from-primary via-[#2563EB] to-[#1F5BFF]" />
           <div className="absolute inset-0 bg-[radial-gradient(60%_70%_at_85%_0%,rgba(255,106,26,0.3),transparent_60%)]" />
-          <PatternOverlay tone="gold" opacityClass="opacity-[0.05]" />
           <div className="relative grid items-center gap-10 lg:grid-cols-[1.3fr_1fr]">
             <div>
               <span className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-4 py-1.5 text-xs font-semibold">
@@ -607,7 +635,8 @@ function PartnerCta() {
                 Xizmat ko'rsatuvchimisiz? O'z boshqaruv panelingizni oling
               </h2>
               <p className="mt-4 max-w-xl text-[15px] leading-6 text-white/75">
-                Millytour hamkorlari millytour_bot orqali ro'yxatdan o'tadi va yo'nalishiga mos bot
+                Millytour hamkorlari {PARTNER_BOT_USERNAME} orqali ro'yxatdan o'tadi va yo'nalishiga
+                mos bot
                 paneliga ega bo'ladi: buyurtmalar, Milly AI biriktirgan vazifalar, kalendar, reyting
                 va to'lovlar — hammasi bitta joyda.
               </p>
@@ -648,254 +677,48 @@ function PartnerCta() {
   );
 }
 
-function TestimonialsBand() {
-  return (
-    <section className="border-y bg-[#f7f9fc] py-14 lg:py-20" aria-label="Mijozlar fikri">
-      <Container>
-        <motion.div {...blurFade} className="flex flex-wrap items-end justify-between gap-6">
-          <SectionHeading
-            eyebrow="Mijozlar fikri"
-            title="Safaringizni biz bilan boshlaganlar nima deydi?"
-            description="Har bir fikr real tur, real mutaxassis va real taassurotga bog'langan. Sizning sayohatingiz ham shu yerda boshlanadi."
-          />
-          <div className="inline-flex items-center gap-2 rounded-2xl border border-gold/20 bg-gold/10 px-4 py-3">
-            <Star className="size-5 fill-gold text-gold" aria-hidden="true" />
-            <span className="text-sm font-bold text-foreground">4.9 / 5</span>
-            <span className="text-xs text-muted-foreground">mijozlar bahosi</span>
-          </div>
-        </motion.div>
-
-        <div className="mt-10 grid gap-4 md:grid-cols-3">
-          {TESTIMONIALS.slice(0, 3).map((review, index) => (
-            <motion.article
-              key={review.id}
-              {...blurFade}
-              transition={{ ...blurFade.transition, delay: index * 0.08 }}
-              className="relative flex h-full flex-col rounded-[24px] border border-border/70 bg-white p-5 shadow-[0_10px_30px_rgba(15,23,42,0.05)]"
-            >
-              <span className="absolute top-4 right-5 text-4xl leading-none font-serif text-primary/15">“</span>
-              <div className="flex items-center gap-1" aria-label={`${review.rating} yulduzdan ${review.rating}`}>
-                {Array.from({ length: 5 }).map((_, star) => (
-                  <Star key={star} className="size-3.5 fill-gold text-gold" aria-hidden="true" />
-                ))}
-              </div>
-              <p className="mt-4 flex-1 text-[14px] leading-6 text-foreground">{review.text}</p>
-              <div className="mt-5 flex items-center gap-3 border-t border-border/70 pt-4">
-                <span className="grid size-10 place-items-center rounded-full bg-primary/10 text-sm font-bold text-primary">
-                  {review.name.split(" ").map((part) => part[0]).join("").slice(0, 2)}
-                </span>
-                <div className="min-w-0">
-                  <p className="truncate text-sm font-semibold text-foreground">{review.name}</p>
-                  <p className="truncate text-xs text-muted-foreground">{review.country} · {review.tour}</p>
-                </div>
-              </div>
-            </motion.article>
-          ))}
-        </div>
-      </Container>
-    </section>
-  );
-}
-
 /* ----------------------------------- page ---------------------------------- */
 
+/**
+ * Bosh sahifa tartibi (soddalashtirilgan):
+ *
+ *   1. Hero + qidiruv paneli
+ *   2. Qanday ishlaydi                — qidiruvdan keyin darhol (3 qadam)
+ *   3. Tur paketlar va yo'nalishlar   — asosiy kontent
+ *   4. Top takliflar                  — chegirmalar (konversiya)
+ *   5. Milly AI                       — asosiy farq qiluvchi xususiyat
+ *   6. Xizmatlar                      — gid, transfer, mehmonxona va h.k.
+ *   7. Hunarmandlar                   — mahalliy bozor
+ *   8. Afzalliklar                    — kafolatlar
+ *   9. Hamkorlik CTA
+ *
+ * Olib tashlangan:
+ * - shaharlar "ishonch qatori" — hero statistikasi bilan takrorlanardi;
+ * - "Aynan siz uchun" qatori (`ForYouRow`) — tur kartochkalarini takrorlardi va
+ *   `/paketlar` sahifasida qolgan;
+ * - `EventsSection` — server `events.list` bo'sh massiv qaytargani uchun u har
+ *   holda ko'rinmasdi (tadbirlar bazaga to'lganda qayta qo'shiladi).
+ */
 export default function Landing() {
   return (
     <>
       <Hero />
-      {/* Trusted bar */}
-      <section className="bg-card py-4">
-        <Container>
-          <motion.div
-            initial={{ opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.3 }}
-            className="flex flex-wrap items-center justify-center gap-6 sm:gap-10"
-          >
-            {[
-              { icon: Sparkles, label: "Samarqand" },
-              { icon: Compass, label: "Buxoro" },
-              { icon: Star, label: "Xiva" },
-              { icon: MapPin, label: "Toshkent" },
-              { icon: Ticket, label: "Farg'ona" },
-            ].map((item, i) => (
-              <span key={i} className="inline-flex items-center gap-2 text-[13px] font-medium text-muted-foreground">
-                <item.icon className="size-4 text-primary" aria-hidden="true" />
-                {item.label}
-              </span>
-            ))}
-            <span className="inline-flex items-center gap-2 text-[13px] font-semibold text-primary">
-              <Star className="size-4 fill-gold text-gold" aria-hidden="true" />
-              4.9 / 5
-            </span>
-          </motion.div>
-        </Container>
-      </section>
+
+      {/* Qidiruv paneli hero bilan ustma-ust turadi */}
       <div className="relative z-20 mx-auto -mt-24 w-full max-w-6xl px-4 sm:px-6">
         <SearchPanel />
       </div>
       <div className="h-10 lg:h-14" aria-hidden="true" />
-      <Container>
-        <ForYouRow />
-      </Container>
+
+      {/* Qidiruvdan keyin darhol: sayohat qanday rejalashtiriladi (3 qadam) */}
       <HowItWorks />
       <PopularTours />
-      <EventsSection />
+      <DealsTeaser />
+      <AiSection />
       <ServicesBand />
       <ArtisansTeaser />
-      <DiscountCardsSection id="chegirma-kartalar" />
-      <AiSection />
-      <TestimonialsBand />
-      <TopDeals />
-      <Newsletter />
+      <AdvantagesBand />
       <PartnerCta />
     </>
-  );
-}
-
-/* ------------------------------- Top Deals ------------------------------- */
-
-const DEALS = [TOUR_PACKAGES[0], TOUR_PACKAGES[1], TOUR_PACKAGES[5]];
-
-function TopDeals() {
-  return (
-    <section className="py-14 lg:py-20" aria-label="TopDeals">
-      <Container>
-        <motion.div {...blurFade} className="grid items-stretch gap-6 lg:grid-cols-[1.1fr_1fr]">
-          {/* Left banner */}
-          <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-primary via-[#2563EB] to-[#1F5BFF] px-8 py-10 text-white sm:px-12">
-            <div className="absolute right-0 top-0 h-full w-1/2 opacity-20">
-              <svg viewBox="0 0 200 200" fill="none" className="h-full w-full">
-                <circle cx="140" cy="60" r="30" stroke="white" strokeWidth="2" opacity="0.5" />
-                <ellipse cx="140" cy="60" rx="50" ry="14" stroke="white" strokeWidth="1" opacity="0.3" />
-                <ellipse cx="140" cy="60" rx="50" ry="14" stroke="white" strokeWidth="1" opacity="0.3" transform="rotate(30 140 60)" />
-                <ellipse cx="140" cy="60" rx="50" ry="14" stroke="white" strokeWidth="1" opacity="0.3" transform="rotate(60 140 60)" />
-                <path d="M20 180 L100 120 L160 140" stroke="white" strokeWidth="3" strokeLinecap="round" opacity="0.4" />
-                <path d="M160 140 L180 100 L140 110" stroke="white" strokeWidth="3" strokeLinecap="round" opacity="0.4" />
-              </svg>
-            </div>
-            <span className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-4 py-1.5 text-xs font-semibold backdrop-blur-sm">
-              <Sparkles className="size-3.5 text-gold" aria-hidden="true" />
-              eng arzon
-            </span>
-            <h2 className="mt-5 max-w-md text-[26px] leading-9 font-extrabold tracking-tight sm:text-[32px] sm:leading-10">
-              Top Deals — bugun uchun eng yaxshi takliflar
-            </h2>
-            <p className="mt-3 max-w-sm text-[15px] leading-6 text-white/75">
-              Samarkand, Bukhara, Xiva va Istanbul — qisqa muddatda, to'liq tarif bilan.
-            </p>
-            <Button size="lg" className="mt-7 bg-accent text-accent-foreground hover:bg-accent/90" asChild>
-              <Link to="/paketlar">
-                Barcha takliflar
-                <ArrowRight className="size-4 ml-1.5" aria-hidden="true" />
-              </Link>
-            </Button>
-          </div>
-
-          {/* Right cards */}
-          <div className="grid gap-4 sm:grid-cols-3 lg:grid-cols-1">
-            {DEALS.map((tour, i) => (
-              <motion.div
-                key={tour.id}
-                {...blurFade}
-                transition={{ ...blurFade.transition, delay: 0.1 + i * 0.08 }}
-              >
-                <Link
-                  to={`/paketlar/${tour.slug}`}
-                  className="group flex h-full flex-col overflow-hidden rounded-2xl border bg-card p-0 transition-all hover:-translate-y-1 hover:shadow-soft"
-                >
-                  <div className="relative aspect-[16/9] overflow-hidden">
-                    <img
-                      src={tour.image}
-                      alt={tour.alt}
-                      loading="lazy"
-                      decoding="async"
-                      className="size-full object-cover transition-transform duration-500 group-hover:scale-[1.04]"
-                    />
-                    {tour.badge && (
-                      <span className={cn(
-                        "absolute top-3 left-3 rounded-full px-3 py-1 text-[10px] font-bold tracking-wide uppercase text-white",
-                        tour.badge === "Best Seller" && "bg-primary",
-                        tour.badge === "Hot Deal" && "bg-accent",
-                        tour.badge === "New" && "bg-[#10B981]",
-                      )}>
-                        {tour.badge}
-                      </span>
-                    )}
-                  </div>
-                  <div className="flex flex-1 flex-col p-4">
-                    <p className="flex items-center gap-1.5 text-[12px] font-medium text-muted-foreground">
-                      <MapPin className="size-3.5" aria-hidden="true" />
-                      {tour.city}
-                    </p>
-                    <h3 className="mt-1 line-clamp-1 text-[14px] leading-5 font-semibold text-foreground">
-                      {tour.title}
-                    </h3>
-                    <div className="mt-auto flex items-center justify-between border-t border-gray-100 pt-3">
-                      <div>
-                        <p className="text-[15px] font-bold text-primary">${tour.priceFrom}</p>
-                        {tour.oldPrice && (
-                          <p className="text-[11px] text-muted-foreground line-through">${tour.oldPrice}</p>
-                        )}
-                      </div>
-                      <span className="text-[11px] font-bold text-gold">{'★'.repeat(Math.round(tour.rating))}</span>
-                    </div>
-                  </div>
-                </Link>
-              </motion.div>
-            ))}
-          </div>
-        </motion.div>
-      </Container>
-    </section>
-  );
-}
-
-/* ------------------------------ Newsletter ------------------------------- */
-
-function Newsletter() {
-  return (
-    <section className="py-14 lg:py-20" aria-label="Obuna">
-      <Container>
-        <motion.div
-          {...blurFade}
-          className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-primary to-[#2563EB] px-6 py-12 text-white sm:px-14"
-        >
-          <div className="absolute right-0 top-0 h-full w-2/5 opacity-20">
-            <svg viewBox="0 0 200 200" fill="none" className="h-full w-full">
-              <path d="M100 180 C80 140 60 100 80 60 C100 20 140 30 160 60 C180 90 160 140 100 180Z" fill="white" opacity="0.3" />
-              <path d="M100 180 C120 140 140 100 120 60" stroke="white" strokeWidth="3" opacity="0.3" />
-              <path d="M100 60 L100 20" stroke="white" strokeWidth="3" strokeLinecap="round" opacity="0.3" />
-              <ellipse cx="100" cy="20" rx="15" ry="8" stroke="white" strokeWidth="2" opacity="0.3" />
-            </svg>
-          </div>
-          <div className="relative max-w-lg">
-            <span className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-4 py-1.5 text-xs font-semibold backdrop-blur-sm">
-              <Sparkles className="size-3.5 text-gold" aria-hidden="true" />
-              Yangiliklar
-            </span>
-            <h2 className="mt-5 text-[26px] leading-9 font-extrabold tracking-tight sm:text-[32px] sm:leading-10">
-              Sayohat anburlarining oldini oling
-            </h2>
-            <p className="mt-3 text-[15px] leading-6 text-white/75">
-              To'lov oldindan, maxsus takliflar va yangi yo'nalishlar — faqat emailingizga.
-            </p>
-            <form
-              onSubmit={(e) => e.preventDefault()}
-              className="mt-7 flex flex-col gap-3 sm:flex-row"
-            >
-              <input
-                type="email"
-                placeholder="Sizning emailingiz"
-                className="flex-1 rounded-full border-0 bg-white px-5 py-3 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-white/50"
-              />
-              <Button type="submit" size="lg" className="shrink-0 bg-accent text-accent-foreground hover:bg-accent/90">
-                Obuna bo'lish
-              </Button>
-            </form>
-          </div>
-        </motion.div>
-      </Container>
-    </section>
   );
 }

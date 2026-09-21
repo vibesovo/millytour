@@ -96,7 +96,7 @@ export function EventsSection({
               className="flex w-[280px] shrink-0 snap-start flex-col rounded-2xl border bg-card p-4"
             >
               <div className="flex items-center justify-between gap-2">
-                <span className="inline-flex items-center gap-1.5 rounded-full bg-gold/15 px-2.5 py-1 text-[11px] font-bold text-[#8a5a00] uppercase">
+                <span className="inline-flex items-center gap-1.5 rounded-full bg-gold/15 px-2.5 py-1 text-[11px] font-bold text-gold-ink uppercase">
                   {event.monthLabel}
                 </span>
                 {event.isCurrentMonth && (

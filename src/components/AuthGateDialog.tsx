@@ -11,12 +11,11 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { MillytourLogo, PatternOverlay } from "@/components/brand";
+import { MillytourLogo } from "@/components/brand";
 import { useAuth } from "@/hooks/use-auth";
 
 const PERKS = [
   "Buyurtmalar va vauchers shu hisobda saqlanadi",
-  "Milly Card chegirmasi avtomatik qo'llanadi",
   "Milly AI dasturlari va tarix bir joyda",
 ];
 
@@ -70,7 +69,6 @@ export function AuthGateDialog({
       >
         <div className="relative overflow-hidden bg-[#0B1220] px-6 pt-6 pb-5 text-white">
           <div className="absolute inset-0 bg-gradient-to-br from-[#0B1220] via-[#12306B] to-[#1E40AF]" />
-          <PatternOverlay tone="gold" opacityClass="opacity-[0.07]" />
           <div className="relative">
             <MillytourLogo mono />
             <DialogHeader className="mt-5 gap-2 text-left">

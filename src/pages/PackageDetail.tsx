@@ -17,14 +17,14 @@ import {
   Sparkles,
   Users,
 } from "lucide-react";
-import { PriceInline } from "@/lib/currency";
+import { Price, PriceInline } from "@/lib/currency";
 import { openMillyAi } from "@/components/AiAssistant";
 import { AuthGateDialog } from "@/components/AuthGateDialog";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { Container } from "@/components/site";
-import { Rating, PatternOverlay } from "@/components/brand";
+import { Rating } from "@/components/brand";
 import { TourCard } from "@/components/tour";
 import { CITY_SPOTS, TOUR_PACKAGES, findTour, type TourPackage } from "@/data/catalog";
 import { useAuth } from "@/hooks/use-auth";
@@ -166,7 +166,7 @@ export default function PackageDetail() {
               loading="eager"
               decoding="async"
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-[#17231d]/80 via-transparent" />
+            <div className="absolute inset-0 bg-gradient-to-t from-ink/80 via-transparent" />
             <div className="absolute inset-x-0 bottom-0 p-5 text-white">
               <div className="flex flex-wrap items-center gap-2">
                 {tour.badge && (
@@ -293,11 +293,10 @@ export default function PackageDetail() {
         {/* -------------------------------- booking -------------------------------- */}
         <aside className="lg:sticky lg:top-24 lg:self-start">
           <Card className="relative overflow-hidden border-primary/15 shadow-lifted">
-            <PatternOverlay opacityClass="opacity-[0.04]" />
             <CardContent className="relative py-6">
               <div className="flex items-baseline justify-between">
                 <div>
-                  <PriceInline usd={tour.priceFrom} className="text-2xl" />
+                  <Price usd={tour.priceFrom} className="text-2xl" />
                   <span className="ml-1 text-sm text-muted-foreground">/ kishi</span>
                   {tour.oldPrice && (
                     <span className="ml-2 text-sm text-muted-foreground line-through">

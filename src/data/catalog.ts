@@ -22,14 +22,28 @@ export const TOUR_CATEGORIES = [
 
 export type CategoryId = (typeof TOUR_CATEGORIES)[number]["id"];
 
-/** Hamkorlarni qabul qiluvchi auth bot — barcha hamkorlik CTA'lari shu yerga olib boradi. */
-export const PARTNER_BOT_USERNAME = "millytour_bot";
+/**
+ * Ikki xil bot — ikki xil auditoriya.
+ *
+ * - `mtour_auth_bot` (`PARTNER_BOT_USERNAME`) — hamkorlar, ya'ni xizmat
+ *   ko'rsatuvchilar (gid, transfer, mehmonxona, hunarmand...). Ular shu bot
+ *   orqali ro'yxatdan o'tadi va vizualsiz (matnli) bot kabinetini oladi.
+ * - `millytour_bot` (`MAIN_BOT_USERNAME`) — turistlar va sayohatchilar. Ular
+ *   bot orqali buyurtma beradi va sayohatini vizualsiz (matnli) kuzatadi.
+ */
+export const PARTNER_BOT_USERNAME = "mtour_auth_bot";
 export const MAIN_BOT_USERNAME = "millytour_bot";
 /** Owner uchun statistika boti — faqat loyiha egasi kuzatadi. */
 export const STATS_BOT_USERNAME = "millytour_bot";
 
+/** Hamkorlar uchun bot havolasi (ro'yxatdan o'tish, kabinet, vazifalar). */
 export function partnerBotLink(payload = "register") {
   return `https://t.me/${PARTNER_BOT_USERNAME}?start=${payload}`;
+}
+
+/** Turistlar uchun bot havolasi (buyurtma, sayohatni kuzatish, yordam). */
+export function touristBotLink(payload = "start") {
+  return `https://t.me/${MAIN_BOT_USERNAME}?start=${payload}`;
 }
 
 export const SERVICES = [
@@ -495,7 +509,12 @@ export type Testimonial = {
   tour: string;
   text: string;
   rating: number;
+  /** Ko'rsatiladigan sana (masalan "2026-yil avgust"). */
   date: string;
+  /** Saralash uchun aniq sana (ISO). */
+  createdAt: string;
+  /** Boshlang'ich "foydali" (like) soni — mijozlar tasdiqlagan. */
+  likes: number;
 };
 
 export const TESTIMONIALS: Testimonial[] = [
@@ -507,6 +526,8 @@ export const TESTIMONIALS: Testimonial[] = [
     text: "Gid Dilshod aka Registonda davr tarixini shunday so'zladi — go'yo asrga qaytib bordik. Narx ilovada ko'rganim bilan bir xil, yashirin to'lov yo'q.",
     rating: 5,
     date: "2026-yil avgust",
+    createdAt: "2026-08-14",
+    likes: 42,
   },
   {
     id: "r2",
@@ -516,6 +537,8 @@ export const TESTIMONIALS: Testimonial[] = [
     text: "Bir hafta ichida beshta shaharni bezovtalisiz aylanib chiqdik. Mehmonxonalar joyida, transferlar o'z vaqtida. AI Planner kunlik dasturni soatma-soat tuzib bergan edi.",
     rating: 5,
     date: "2026-yil iyun",
+    createdAt: "2026-06-21",
+    likes: 37,
   },
   {
     id: "r3",
@@ -525,6 +548,8 @@ export const TESTIMONIALS: Testimonial[] = [
     text: "Rishton kulolchilik ustaxonasida o'zim chelnok yasadim! Xarid qilgan atlasimni 5 kunda Seulga yetkazdilar. Tarjimon doim yonimizda edi.",
     rating: 5,
     date: "2026-yil sentabr",
+    createdAt: "2026-09-08",
+    likes: 51,
   },
   {
     id: "r4",
@@ -534,6 +559,8 @@ export const TESTIMONIALS: Testimonial[] = [
     text: "Ziyorat marshruti imom bilan rejalashtirilgani juda qulay bo'ldi. Halol ovqat va namoz vaqtlari hisobga olingan — bu ishonchni oshiradi.",
     rating: 5,
     date: "2026-yil may",
+    createdAt: "2026-05-30",
+    likes: 28,
   },
   {
     id: "r5",
@@ -543,6 +570,63 @@ export const TESTIMONIALS: Testimonial[] = [
     text: "To'lovni Payme orqali bir zumda amalga oshirdim, vaucher va QR chipta darhol keldi. Qishloq uyidagi nonushta — alohida taassurot.",
     rating: 4,
     date: "2026-yil iyul",
+    createdAt: "2026-07-19",
+    likes: 19,
+  },
+  {
+    id: "r6",
+    name: "Hans Müller",
+    country: "Berlin, Germaniya",
+    tour: "Xiva — Ichan Qal'a kechki ziyorati",
+    text: "Kechki yorug'likda Ichan Qal'a butunlay boshqa dunyo. Gid nemis tilida bemalol gapirdi, mehmonxona devor ichida edi — ertalabki minoralar manzarasi uchun arziydi.",
+    rating: 5,
+    date: "2026-yil sentabr",
+    createdAt: "2026-09-11",
+    likes: 34,
+  },
+  {
+    id: "r7",
+    name: "Aigerim Sarsenova",
+    country: "Olmaota, Qozog'iston",
+    tour: "Aydar-Arnasoy ko'llari va yurta lager",
+    text: "Yurtada tunash, ko'l bo'yida choy va yulduzli osmon — bolalarim uchun eng katta sovg'a bo'ldi. Yo'l bo'ylab transferlar yangi mashinada kelgan.",
+    rating: 5,
+    date: "2026-yil avgust",
+    createdAt: "2026-08-27",
+    likes: 29,
+  },
+  {
+    id: "r8",
+    name: "Yuki Tanaka",
+    country: "Osaka, Yaponiya",
+    tour: "Buyuk Ipak yo'li grand-turi",
+    text: "Dastur juda zich, ammo charchamaydi: har kuni bitta asosiy obida va bitta hunarmand ustaxonasi. Kuchli taassurot — Shahrisabz va Termiz qismi.",
+    rating: 5,
+    date: "2026-yil iyul",
+    createdAt: "2026-07-04",
+    likes: 41,
+  },
+  {
+    id: "r9",
+    name: "Bekzod Rahimov",
+    country: "Farg'ona, O'zbekiston",
+    tour: "Chimyon tog' dam olish va teleferik",
+    text: "Oilaviy dam olish uchun aynan mos. Mehmonxonada bolalar maydoni bor, teleferik navbatsiz — chiptani ilovadan oldindan olganmiz.",
+    rating: 4,
+    date: "2026-yil iyun",
+    createdAt: "2026-06-09",
+    likes: 22,
+  },
+  {
+    id: "r10",
+    name: "Leyla Hasanova",
+    country: "Boku, Ozarbayjon",
+    tour: "Buxoro — Podshoh Ark va Labi Hovuz",
+    text: "Buxoroda ikki kun yetarli emas ekan — buyurtma berishda Milly AI aynan shu kunni tanlashni taklif qilgan, pushaymon qilmadik. Qo'llab-quvvatlash kechasi ham javob berdi.",
+    rating: 5,
+    date: "2026-yil sentabr",
+    createdAt: "2026-09-15",
+    likes: 26,
   },
 ];
 

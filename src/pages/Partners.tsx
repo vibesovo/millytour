@@ -24,8 +24,12 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Container, PageHero } from "@/components/site";
-import { PatternOverlay } from "@/components/brand";
-import { PARTNER_DIRECTIONS, partnerBotLink, type Direction } from "@/data/catalog";
+import {
+  PARTNER_BOT_USERNAME,
+  PARTNER_DIRECTIONS,
+  partnerBotLink,
+  type Direction,
+} from "@/data/catalog";
 import { cn } from "@/lib/utils";
 
 const DIRECTION_ICONS: Record<Direction, React.ElementType> = {
@@ -42,7 +46,7 @@ const DIRECTION_ICONS: Record<Direction, React.ElementType> = {
 const STEPS = [
   {
     title: "Auth botga o'ting",
-    text: "Telegram'dagi millytour_bot botini oching va yo'nalishingizni tanlang.",
+    text: `Telegram'dagi @${PARTNER_BOT_USERNAME} (auth bot) ni oching va yo'nalishingizni tanlang.`,
   },
   {
     title: "Ma'lumotlarni kiriting",
@@ -103,7 +107,7 @@ export default function Partners() {
       <PageHero
         eyebrow="Hamkorlik"
         title="Millytour hamkori bo'ling — yo'nalishingizga mos boshqaruv paneli bilan"
-        description="Gid, transfer, tarjimon, fotograf, hunarmand yoki mehmonxona egasimisiz? millytour_bot orqali ro'yxatdan o'ting va buyurtmalarni o'z bot hamda panelingizda boshqaring."
+        description={`Gid, transfer, tarjimon, fotograf, hunarmand yoki mehmonxona egasimisiz? @${PARTNER_BOT_USERNAME} (auth bot) orqali ro'yxatdan o'ting va buyurtmalarni o'z bot hamda panelingizda boshqaring.`}
       >
         <div className="flex flex-wrap gap-3">
           <Button size="lg" className="bg-gold text-gold-foreground hover:bg-gold/90" asChild>
@@ -147,7 +151,7 @@ export default function Partners() {
                 <span
                   className={cn(
                     "grid size-11 place-items-center rounded-xl",
-                    isActive ? "bg-primary text-primary-foreground" : "bg-primary/8 text-primary",
+                    isActive ? "bg-primary text-primary-foreground" : "bg-primary/10 text-primary",
                   )}
                 >
                   <Icon className="size-5" aria-hidden="true" />
@@ -204,7 +208,6 @@ export default function Partners() {
 
           {/* --------------------------------- bot menyu ------------------------------- */}
           <Card className="relative overflow-hidden border-border/70">
-            <PatternOverlay opacityClass="opacity-[0.04]" />
             <CardContent className="relative py-6">
               <div className="flex items-center gap-2">
                 <Bot className="size-5 text-primary" aria-hidden="true" />
@@ -313,7 +316,7 @@ export default function Partners() {
                   </p>
                   <p className="max-w-sm text-[13px] leading-5 text-muted-foreground">
                     Mutaxassis 1 ish kuni ichida bog'lanadi. Tezroq boshlash uchun
-                    millytour_bot da ro'yxatdan o'ting.
+                    @{PARTNER_BOT_USERNAME} da ro'yxatdan o'ting.
                   </p>
                   <Button asChild>
                     <a href={botLink} target="_blank" rel="noreferrer">

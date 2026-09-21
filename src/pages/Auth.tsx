@@ -2,13 +2,15 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { InputOTP, InputOTPGroup, InputOTPSlot } from "@/components/ui/input-otp";
 import { useAuth } from "@/hooks/use-auth";
-import { MillytourLogo, PatternOverlay } from "@/components/brand";
+import { MillytourLogo } from "@/components/brand";
+import { PARTNER_BOT_USERNAME, partnerBotLink } from "@/data/catalog";
 import {
   ArrowLeft,
   ArrowRight,
   Globe,
   Loader2,
   Mail,
+  Send,
   ShieldCheck,
   UserRound,
 } from "lucide-react";
@@ -113,8 +115,10 @@ function Auth({ redirectAfterAuth }: AuthProps = {}) {
   return (
     <div className="grid min-h-screen lg:grid-cols-2" data-page="auth">
       {/* Brend paneli — faqat desktop */}
-      <aside className="relative hidden overflow-hidden bg-primary text-primary-foreground lg:flex lg:flex-col">
-        <PatternOverlay tone="gold" opacityClass="opacity-[0.12]" />
+      <aside className="relative hidden overflow-hidden bg-[#0B1220] text-white lg:flex lg:flex-col">
+        {/* Saytning boshqa to'q paneli bilan bir xil gradient + oltin nur */}
+        <div className="absolute inset-0 bg-gradient-to-br from-[#0B1220] via-[#12306B] to-[#1E40AF]" />
+        <div className="absolute inset-0 bg-[radial-gradient(70%_60%_at_15%_0%,rgba(245,158,11,0.22),transparent_60%)]" />
         <div className="relative z-10 flex h-full flex-col p-10 xl:p-14">
           <Link to="/" aria-label="millytour — bosh sahifa">
             <MillytourLogo mono />
@@ -123,8 +127,8 @@ function Auth({ redirectAfterAuth }: AuthProps = {}) {
             <h1 className="text-3xl leading-10 font-bold tracking-tight">
               O'zbekiston bo'ylab shaxsiy sayohatingizni yarating
             </h1>
-            <p className="mt-4 text-sm leading-6 text-primary-foreground/75">
-              Tayyor tur paketlar, 30 soniyada AI dastur va hunarmandlardan
+            <p className="mt-4 text-sm leading-6 text-white/75">
+              Tayyor tur paketlar, Milly AI dasturi va hunarmandlardan
               to'g'ridan-to'g'ri xarid — bitta hisobda.
             </p>
             <ul className="mt-8 flex flex-col gap-3 text-sm">
@@ -133,14 +137,14 @@ function Auth({ redirectAfterAuth }: AuthProps = {}) {
                 "Eng yaxshi narx kafolati",
                 "Xavfsiz to'lov: Click, Payme, Visa",
               ].map((t) => (
-                <li key={t} className="flex items-center gap-2.5 text-primary-foreground/85">
+                <li key={t} className="flex items-center gap-2.5 text-white/85">
                   <ShieldCheck className="size-4 shrink-0 text-gold" aria-hidden="true" />
                   {t}
                 </li>
               ))}
             </ul>
           </div>
-          <p className="mt-12 text-xs text-primary-foreground/50">
+          <p className="mt-12 text-xs text-white/50">
             © 2026 millytour · Toshkent, O'zbekiston
           </p>
         </div>
@@ -254,28 +258,37 @@ function Auth({ redirectAfterAuth }: AuthProps = {}) {
                   Xizmat ko'rsatuvchimisiz?
                 </p>
                 <p className="mt-1 text-xs leading-5 text-muted-foreground">
-                  Gid, transfer, hunarmand va mehmonxona egalari Telegram auth bot orqali
-                  ro'yxatdan o'tadi — paydo bo'ladigan boshqaruv paneli yo'nalishga moslanadi.
+                  Gid, transfer, hunarmand va mehmonxona egalari @{PARTNER_BOT_USERNAME} (auth bot)
+                  orqali ro'yxatdan o'tadi va o'z yo'nalishiga mos bot kabinetini oladi.
                 </p>
                 <div className="mt-3 flex flex-wrap gap-2">
                   <Button variant="outline" size="sm" asChild>
-                    <Link to="/hamkorlar">Hamkor bo'lish</Link>
+                    <Link to="/hamkorlar">Hamkorlik shartlari</Link>
                   </Button>
                   <Button variant="ghost" size="sm" asChild>
-                    <Link to="/telegram">Telegram mini app</Link>
+                    <a href={partnerBotLink()} target="_blank" rel="noreferrer">
+                      <Send className="size-3.5" aria-hidden="true" />
+                      Auth botni ochish
+                    </a>
                   </Button>
                 </div>
               </div>
 
               <p className="mt-8 text-center text-xs leading-5 text-muted-foreground">
                 Davom etish orqali{" "}
-                <a href="#" className="underline underline-offset-4 hover:text-foreground">
+                <Link
+                  to="/hujjatlar#oferta"
+                  className="underline underline-offset-4 hover:text-foreground"
+                >
                   ommaviy oferta
-                </a>{" "}
+                </Link>{" "}
                 va{" "}
-                <a href="#" className="underline underline-offset-4 hover:text-foreground">
+                <Link
+                  to="/hujjatlar#maxfiylik"
+                  className="underline underline-offset-4 hover:text-foreground"
+                >
                   maxfiylik siyosatiga
-                </a>{" "}
+                </Link>{" "}
                 rozilik bildirasiz.
               </p>
             </>

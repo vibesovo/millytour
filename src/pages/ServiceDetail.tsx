@@ -29,11 +29,10 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { Container, PageHero } from "@/components/site";
-import { PatternOverlay } from "@/components/brand";
 import { ServiceOrderForm, type BookableService } from "@/components/service-order-form";
 import { ServiceRequestPanel } from "@/components/service-request-panel";
 import { openMillyAi } from "@/components/AiAssistant";
-import { partnerBotLink, type Direction } from "@/data/catalog";
+import { PARTNER_BOT_USERNAME, partnerBotLink, type Direction } from "@/data/catalog";
 import { SERVICE_PAGES, findServicePage, type ServiceType } from "@/data/service-pages";
 import { cn } from "@/lib/utils";
 
@@ -209,7 +208,7 @@ export default function ServiceDetail() {
             decoding="async"
             className="aspect-[4/3] w-full object-cover"
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-[#17231d]/70 via-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-t from-ink/70 via-transparent" />
           <div className="absolute inset-x-0 bottom-0 flex items-center gap-2 p-4 text-white">
             <Icon className="size-5 text-gold" aria-hidden="true" />
             <span className="text-sm font-semibold">{page.label}</span>
@@ -236,7 +235,7 @@ export default function ServiceDetail() {
                 "cursor-pointer rounded-full border px-3.5 py-1.5 text-[12px] font-semibold transition-colors",
                 activeType
                   ? "border-border bg-background text-muted-foreground hover:text-foreground"
-                  : "border-primary bg-primary/8 text-primary",
+                  : "border-primary bg-primary/10 text-primary",
               )}
             >
               Barcha turlar
@@ -338,7 +337,7 @@ export default function ServiceDetail() {
                 Bu yo'nalishda hozircha tasdiqlangan mutaxassis yo'q
               </p>
               <p className="max-w-md text-sm text-muted-foreground">
-                {page.label} bo'yicha hamkorlar millytour_bot orqali ro'yxatdan o'tadi va
+                {page.label} bo'yicha hamkorlar {PARTNER_BOT_USERNAME} orqali ro'yxatdan o'tadi va
                 administrator tasdiqlagach shu ro'yxatda chiqadi. Hoziroq so'rov qoldirsangiz,
                 birinchi mos mutaxassisga yuboriladi.
               </p>
@@ -382,7 +381,7 @@ export default function ServiceDetail() {
                       {p.capacity ? <span>{p.capacity}</span> : null}
                     </p>
                   </div>
-                  <span className="inline-flex shrink-0 items-center gap-1 rounded-full bg-gold/15 px-2.5 py-1 text-[12px] font-bold text-[#8a5a00]">
+                  <span className="inline-flex shrink-0 items-center gap-1 rounded-full bg-gold/15 px-2.5 py-1 text-[12px] font-bold text-gold-ink">
                     <Star className="size-3.5 fill-gold text-gold" aria-hidden="true" />
                     {p.rating.toFixed(1)}
                   </span>
@@ -431,8 +430,7 @@ export default function ServiceDetail() {
       </Container>
 
       {/* ── Qanday ishlaydi ───────────────────────────────────────────────── */}
-      <section className="relative overflow-hidden bg-[#17231d] py-14 text-white">
-        <PatternOverlay tone="gold" opacityClass="opacity-[0.05]" />
+      <section className="relative overflow-hidden bg-ink py-14 text-white">
         <Container className="relative">
           <p className="text-[11px] font-bold tracking-[0.16em] text-gold uppercase">
             Qanday ishlaydi
@@ -450,7 +448,7 @@ export default function ServiceDetail() {
                 transition={{ duration: 0.4, delay: index * 0.08 }}
                 className="rounded-2xl border border-white/12 bg-white/[0.04] p-5"
               >
-                <span className="grid size-8 place-items-center rounded-xl bg-gold text-[13px] font-bold text-[#3a2a00]">
+                <span className="grid size-8 place-items-center rounded-xl bg-gold text-[13px] font-bold text-gold-ink">
                   {index + 1}
                 </span>
                 <p className="mt-3.5 text-[15px] font-semibold">{step.title}</p>

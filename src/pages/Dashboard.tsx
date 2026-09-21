@@ -3,14 +3,12 @@ import { Link, Navigate, useSearchParams } from "react-router";
 import { useRestMutation, useRestQuery } from "@/api/client";
 import { toast } from "sonner";
 import {
-  ArrowRight,
   BadgeCheck,
   CalendarDays,
   ChevronDown,
   ClipboardList,
   Compass,
   CreditCard,
-  Gem,
   Globe2,
   LayoutDashboard,
   LifeBuoy,
@@ -27,8 +25,6 @@ import { Button } from "@/components/ui/button";
 import { PanelCard, PanelEmpty, PanelShell, PanelTable, StatCard, StatusBadge } from "@/components/workspace";
 import { PriceInline } from "@/lib/currency";
 import { TourCard } from "@/components/tour";
-import { MillyCardVisual, cityById, colorById, designById } from "@/components/milly-card";
-import { CARD_TIERS, TIER_META, type TierId } from "@/data/card-tiers";
 import { useAuth } from "@/hooks/use-auth";
 import { TOUR_PACKAGES, TOUR_CATEGORIES, type TourPackage } from "@/data/catalog";
 import type { Plan as AiPlan } from "@/lib/planner";
@@ -107,125 +103,9 @@ function BookingSpecialists({ bookingId }: { bookingId: string }) {
   );
 }
 
-type MyCard = {
-  tier: string;
-  design?: string;
-  discountPercent: number;
-  expiresAt: number;
-  reference: string;
-  pricePaid: number;
-};
-
-/**
- * Kabinetdagi Milly Card — foydalanuvchi tanlagan dizayn va tarif bilan
- * haqiqiy karta ko'rinishida (landing bilan bir xil vizual, alohida karta
- * dizayni o'ylab topilmaydi).
- */
-function ActiveMillyCard({ card, holder }: { card: MyCard; holder?: string }) {
-  const tier = CARD_TIERS.find((t) => t.id === card.tier) ?? CARD_TIERS[1];
-  const meta = TIER_META[tier.id as TierId] ?? TIER_META["6"];
-  const design = designById(card.design);
-  const designName =
-    design.style === "city"
-      ? cityById(design.variant).name
-      : colorById(design.variant).name;
-  const Icon = meta.icon;
-
-  const view = {
-    id: tier.id,
-    months: tier.months,
-    discountPercent: card.discountPercent,
-    priceUsd: tier.priceUsd,
-    name: meta.name,
-  };
-
-  const facts = [
-    { label: "Chegirma", value: `${card.discountPercent}%` },
-    { label: "Muddat", value: `${tier.months} oy` },
-    { label: "Dizayn", value: designName },
-    {
-      label: "Amal qiladi",
-      value: new Date(card.expiresAt).toLocaleDateString("uz-UZ"),
-    },
-  ];
-
-  return (
-    <div className="grid gap-6 lg:grid-cols-[minmax(0,360px)_1fr] lg:items-start">
-      <MillyCardVisual
-        style={design.style}
-        variant={design.variant}
-        tier={view}
-        holder={holder}
-        expiresAt={card.expiresAt}
-      />
-
-      <div className="space-y-4">
-        <div className="flex items-center gap-3">
-          <span className="grid size-10 shrink-0 place-items-center rounded-2xl bg-primary/10">
-            <Icon className={cn("size-5", meta.accent)} aria-hidden="true" />
-          </span>
-          <div className="min-w-0">
-            <p className="text-[15px] font-semibold tracking-tight">
-              {meta.name} · {tier.label}
-            </p>
-            <p className="text-[12px] text-muted-foreground">
-              {card.reference} · {meta.badge}
-            </p>
-          </div>
-        </div>
-
-        <dl className="grid grid-cols-2 gap-x-4 gap-y-3">
-          {facts.map((fact) => (
-            <div key={fact.label}>
-              <dt className="text-[11px] font-medium uppercase tracking-wider text-muted-foreground">
-                {fact.label}
-              </dt>
-              <dd className="mt-0.5 truncate text-[13px] font-semibold">{fact.value}</dd>
-            </div>
-          ))}
-        </dl>
-
-        <p className="text-[12px] leading-5 text-muted-foreground">
-          Tur paketlar, gid va mehmonxona xizmatlari hamda Milly AI dasturlari — barchasi{" "}
-          <b className="text-foreground">{card.discountPercent}% chegirma</b> bilan hisoblanadi.
-          Chegirma bron qilishda avtomatik qo'llanadi.
-        </p>
-      </div>
-    </div>
-  );
-}
-
-/** Karta haqida qisqa chiziq — umumiy ko'rinish va tarix tablarida. */
-function MillyCardStrip({ card }: { card: MyCard }) {
-  return (
-    <Link
-      to="/dashboard?tab=card"
-      className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-primary/40 bg-primary/5 px-5 py-4 transition-colors hover:border-primary"
-    >
-      <div className="flex items-center gap-3">
-        <Gem className="h-5 w-5 shrink-0 text-primary" aria-hidden="true" />
-        <div>
-          <p className="text-sm font-semibold">
-            Milly Card faol — {card.discountPercent}% chegirma
-          </p>
-          <p className="text-xs text-muted-foreground">
-            {new Date(card.expiresAt).toLocaleDateString("uz-UZ")} gacha · har bir bron avtomatik
-            arzonlashadi
-          </p>
-        </div>
-      </div>
-      <span className="inline-flex items-center gap-1 text-[13px] font-semibold text-primary">
-        Kartani ko'rish
-        <ArrowRight className="size-3.5" aria-hidden="true" />
-      </span>
-    </Link>
-  );
-}
-
 const TABS = [
   { id: "overview", label: "Umumiy ko'rinish", icon: LayoutDashboard },
   { id: "orders", label: "Buyurtmalarim", icon: ClipboardList },
-  { id: "card", label: "Milly Card", icon: Gem },
   { id: "history", label: "Tarix va pasport", icon: Globe2 },
   { id: "plans", label: "AI dasturlar", icon: Sparkles },
   { id: "recommendations", label: "Tavsiyalar", icon: Compass },
@@ -257,7 +137,6 @@ export default function Dashboard() {
   const [openBooking, setOpenBooking] = useState<string | null>(null);
   const data = useRestQuery("bookings", "mine");
   const plans = useRestQuery("plans", "mine");
-  const myCard = useRestQuery("discountCards", "active");
   const myReviews = (useRestQuery<{ rating: number }[]>("reviews", "mine") ?? []) as { rating: number }[];
   const setStatus = useRestMutation("bookings", "setStatus");
   const createLink = useRestMutation("telegram", "linkCode");
@@ -481,40 +360,6 @@ export default function Dashboard() {
               </ul>
             </PanelCard>
           </div>
-
-          {myCard && <MillyCardStrip card={myCard} />}
-        </div>
-      )}
-
-      {tab === "card" && (
-        <div className="flex flex-col gap-6">
-          {myCard ? (
-            <section className="flex flex-col gap-5">
-              <div>
-                <h3 className="text-[15px] font-semibold tracking-tight">Milly Card</h3>
-                <p className="mt-1 text-[13px] leading-5 text-muted-foreground">
-                  Chegirma kartangiz — muddat davomida har bir bronda avtomatik qo'llanadi.
-                </p>
-              </div>
-              <ActiveMillyCard card={myCard} holder={user?.name} />
-            </section>
-          ) : (
-            <PanelCard
-              title="Milly Card"
-              description="3, 6 yoki 12 oylik chegirma kartasi — dizaynni o'zingiz tanlaysiz"
-            >
-              <PanelEmpty
-                icon={Gem}
-                title="Hozircha faol karta yo'q"
-                description="Karta bosh sahifada tanlanadi: dizayn (Registon, Buxoro, Xiva, Toshkent, Ipak yo'li, Zamonaviy), muddat va tarif. To'lov tasdiqlangach karta shu yerda ko'rinadi."
-                action={
-                  <Button asChild>
-                    <Link to="/#chegirma-kartalar">Kartani tanlash</Link>
-                  </Button>
-                }
-              />
-            </PanelCard>
-          )}
         </div>
       )}
 
@@ -664,8 +509,6 @@ export default function Dashboard() {
               </ul>
             )}
           </PanelCard>
-
-          {myCard && <MillyCardStrip card={myCard} />}
 
           <PanelCard title="Buyurtmalar tarixi" description="Barcha so'rov va bronlar">
             {bookings.length === 0 ? (

@@ -30,7 +30,12 @@ import {
   StatusBadge,
 } from "@/components/workspace";
 import { useAuth } from "@/hooks/use-auth";
-import { PARTNER_DIRECTIONS, partnerBotLink, type Direction } from "@/data/catalog";
+import {
+  PARTNER_BOT_USERNAME,
+  PARTNER_DIRECTIONS,
+  partnerBotLink,
+  type Direction,
+} from "@/data/catalog";
 import { cn } from "@/lib/utils";
 
 const TABS = [
@@ -288,7 +293,7 @@ export default function Partner() {
                     rel="noreferrer"
                   >
                     <Bot className="size-4" aria-hidden="true" />
-                    millytour_bot ni ochish
+                    {PARTNER_BOT_USERNAME} ni ochish
                   </a>
                 </Button>
               </CardContent>

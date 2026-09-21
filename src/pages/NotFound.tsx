@@ -3,7 +3,6 @@ import { motion } from "framer-motion";
 import { ArrowLeft, Compass, MapPin, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Container } from "@/components/site";
-import { PatternOverlay } from "@/components/brand";
 
 const LINKS = [
   { label: "Barcha tur paketlar", to: "/paketlar", icon: MapPin },
@@ -14,7 +13,6 @@ const LINKS = [
 export default function NotFound() {
   return (
     <section className="relative overflow-hidden py-24">
-      <PatternOverlay opacityClass="opacity-[0.05]" />
       <Container className="relative">
         <motion.div
           initial={{ opacity: 0, y: 16 }}

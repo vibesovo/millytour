@@ -48,6 +48,10 @@
   --color-sidebar-ring: var(--sidebar-ring);
   --color-gold: var(--gold);
   --color-gold-foreground: var(--gold-foreground);
+  /* Oltin fon ustidagi to'q matn (badge, nishon) */
+  --color-gold-ink: var(--gold-ink);
+  /* To'q brend yuzasi — rasm ustidagi qatlam va panel kartochkalari */
+  --color-ink: var(--ink);
   --color-eco: var(--eco);
   --color-eco-foreground: var(--eco-foreground);
   --color-coral: var(--coral);
@@ -94,6 +98,8 @@
   --sidebar-ring: oklch(0.642 0.229 267.6);
   --gold: oklch(0.755 0.156 68);
   --gold-foreground: oklch(0.169 0.022 263);
+  --gold-ink: oklch(0.42 0.09 68);
+  --ink: oklch(0.19 0.03 264);
   --eco: oklch(0.627 0.15 163);
   --eco-foreground: oklch(0.999 0.002 280);
   --coral: oklch(0.626 0.225 29.8);
@@ -134,6 +140,8 @@
   --sidebar-ring: oklch(0.705 0.18 267.6);
   --gold: oklch(0.755 0.156 68);
   --gold-foreground: oklch(0.145 0.02 260);
+  --gold-ink: oklch(0.85 0.11 78);
+  --ink: oklch(0.16 0.02 262);
   --eco: oklch(0.696 0.17 162.48);
   --eco-foreground: oklch(0.145 0.02 260);
   --coral: oklch(0.626 0.225 29.8);
@@ -152,20 +160,9 @@
     -webkit-text-size-adjust: 100%;
   }
   body {
+    /* Fon — toza oq, hech qanday rasm yoki qatlam yo'q. */
     @apply bg-background text-foreground;
-    background-image:
-      radial-gradient(
-        1100px 560px at 8% -8%,
-        color-mix(in oklch, var(--primary) 7%, transparent),
-        transparent 70%
-      ),
-      radial-gradient(
-        900px 480px at 102% -4%,
-        color-mix(in oklch, var(--coral) 5%, transparent),
-        transparent 65%
-      );
-    background-attachment: fixed;
-    background-repeat: no-repeat;
+    background-image: none;
     -webkit-tap-highlight-color: transparent;
     overscroll-behavior-y: none;
     font-feature-settings: "cv11", "ss01";
@@ -173,7 +170,6 @@
   }
   h1, h2, h3 {
     letter-spacing: -0.015em;
-    color: var(--foreground);
   }
   button:not(:disabled),
   [role="button"]:not([aria-disabled="true"]),
@@ -226,14 +222,6 @@
 }
 
 @layer utilities {
-  .pattern-uz {
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='64' height='64' viewBox='0 0 64 64'%3E%3Cg fill='none' stroke='%231E40AF' stroke-width='1'%3E%3Ccircle cx='32' cy='32' r='10.5'/%3E%3Crect x='21.5' y='21.5' width='21' height='21'/%3E%3Cpath d='M32 0v10.5M32 53.5V64M0 32h10.5M53.5 32H64M10.7 10.7l7.4 7.4M45.9 45.9l7.4 7.4M53.3 10.7l-7.4 7.4M18.1 45.9l-7.4 7.4M53.3 10.7l-7.4 7.4M18.1 45.9l-7.4 7.4'/%3E%3Cpath d='M32 21.5L42.5 32 32 42.5 21.5 32Z'/%3E%3C/g%3E%3C/svg%3E");
-    background-size: 56px 56px;
-  }
-  .pattern-uz-gold {
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='64' height='64' viewBox='0 0 64 64'%3E%3Cg fill='none' stroke='%23F59E0B' stroke-width='1'%3E%3Ccircle cx='32' cy='32' r='10.5'/%3E%3Crect x='21.5' y='21.5' width='21' height='21'/%3E%3Cpath d='M32 0v10.5M32 53.5V64M0 32h10.5M53.5 32H64M10.7 10.7l7.4 7.4M45.9 45.9l7.4 7.4M53.3 10.7l-7.4 7.4M18.1 45.9l-7.4 7.4M18.1 45.9l-7.4 7.4'/%3E%3Cpath d='M32 21.5L42.5 32 32 42.5 21.5 32Z'/%3E%3C/g%3E%3C/svg%3E");
-    background-size: 56px 56px;
-  }
   .shadow-lifted {
     box-shadow:
       0 2px 4px rgba(15, 27, 61, 0.04),

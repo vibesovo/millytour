@@ -8,20 +8,35 @@ import { OnboardingGate } from "@/components/OnboardingGate";
 import { SiteLayout } from "@/components/site";
 import React, { StrictMode, useEffect, lazy, Suspense } from "react";
 import { createRoot } from "react-dom/client";
-import { BrowserRouter, Route, Routes, useLocation } from "react-router";
-import { CurrencyProvider } from "@/lib/currency";
+import { BrowserRouter, Navigate, Route, Routes, useLocation } from "react-router";
 import { LangProvider } from "@/lib/i18n";
 import "./index.css";
+
+/**
+ * Panel rejimi.
+ *
+ * - `admin`   — `npm run dev:admin` (:3000) va millytour-adm.* domeni: faqat
+ *   `/admin` hamda `/auth`.
+ * - `partner` — `npm run dev:partner` (:3001): faqat `/partner` hamda `/auth`.
+ * - `public`  — oddiy sayt (default).
+ *
+ * Qolgan barcha manzillar tanlangan panelga yo'naltiriladi.
+ */
+const APP_PANEL =
+  import.meta.env.VITE_APP_PANEL ?? (import.meta.env.VITE_ADMIN_ONLY === "1" ? "admin" : "public");
 
 // Lazy load route components for better code splitting
 const Landing = lazy(() => import("./pages/Landing.tsx"));
 const Packages = lazy(() => import("./pages/Packages.tsx"));
 const PackageDetail = lazy(() => import("./pages/PackageDetail.tsx"));
+const Destinations = lazy(() => import("./pages/Destinations.tsx"));
+const Deals = lazy(() => import("./pages/Deals.tsx"));
+const Documents = lazy(() => import("./pages/Documents.tsx"));
+const DestinationDetail = lazy(() => import("./pages/DestinationDetail.tsx"));
 const Marketplace = lazy(() => import("./pages/Marketplace.tsx"));
 const Services = lazy(() => import("./pages/Services.tsx"));
 const ServiceDetail = lazy(() => import("./pages/ServiceDetail.tsx"));
 const Partners = lazy(() => import("./pages/Partners.tsx"));
-const TelegramEntry = lazy(() => import("./pages/Telegram.tsx"));
 const AuthPage = lazy(() => import("./pages/Auth.tsx"));
 const Dashboard = lazy(() => import("./pages/Dashboard.tsx"));
 const Partner = lazy(() => import("./pages/Partner.tsx"));
@@ -131,31 +146,68 @@ root.render(
         <VlyToolbar />
       </ToolbarErrorBoundary>
       <LangProvider>
-        <CurrencyProvider>
-          <BrowserRouter>
+        <BrowserRouter>
             <RouteSyncer />
             <Suspense fallback={<RouteLoading />}>
               <Routes>
-                <Route path="/" element={<Public><Landing /></Public>} />
-                <Route path="/paketlar" element={<Public><Packages /></Public>} />
-                <Route path="/paketlar/:slug" element={<Public><PackageDetail /></Public>} />
-                <Route path="/xizmatlar" element={<Public><Services /></Public>} />
-                <Route path="/xizmatlar/:service" element={<Public><ServiceDetail /></Public>} />
-                <Route path="/hunarmandlar" element={<Public><Marketplace /></Public>} />
-                <Route path="/hamkorlar" element={<Public><Partners /></Public>} />
-                <Route path="/telegram" element={<TelegramEntry />} />
-                <Route path="/auth" element={<AuthPage redirectAfterAuth="/dashboard" />} />
-                <Route path="/dashboard" element={<RequireAuth><Dashboard /></RequireAuth>} />
-                <Route path="/partner" element={<RequireAuth><Partner /></RequireAuth>} />
-                <Route path="/admin" element={<RequireAuth><Admin /></RequireAuth>} />
-                <Route path="*" element={<Public><NotFound /></Public>} />
+                {APP_PANEL === "admin" ? (
+                  <>
+                    <Route
+                      path="/auth"
+                      element={<AuthPage redirectAfterAuth="/admin" />}
+                    />
+                    <Route
+                      path="/admin"
+                      element={
+                        <RequireAuth>
+                          <Admin />
+                        </RequireAuth>
+                      }
+                    />
+                    <Route path="*" element={<Navigate to="/admin" replace />} />
+                  </>
+                ) : APP_PANEL === "partner" ? (
+                  <>
+                    <Route
+                      path="/auth"
+                      element={<AuthPage redirectAfterAuth="/partner" />}
+                    />
+                    <Route
+                      path="/partner"
+                      element={
+                        <RequireAuth>
+                          <Partner />
+                        </RequireAuth>
+                      }
+                    />
+                    <Route path="*" element={<Navigate to="/partner" replace />} />
+                  </>
+                ) : (
+                  <>
+                    <Route path="/" element={<Public><Landing /></Public>} />
+                    <Route path="/paketlar" element={<Public><Packages /></Public>} />
+                    <Route path="/paketlar/:slug" element={<Public><PackageDetail /></Public>} />
+                    <Route path="/shaharlar" element={<Public><Destinations /></Public>} />
+                    <Route path="/takliflar" element={<Public><Deals /></Public>} />
+                    <Route path="/shaharlar/:slug" element={<Public><DestinationDetail /></Public>} />
+                    <Route path="/xizmatlar" element={<Public><Services /></Public>} />
+                    <Route path="/xizmatlar/:service" element={<Public><ServiceDetail /></Public>} />
+                    <Route path="/hunarmandlar" element={<Public><Marketplace /></Public>} />
+                    <Route path="/hamkorlar" element={<Public><Partners /></Public>} />
+                    <Route path="/hujjatlar" element={<Public><Documents /></Public>} />
+                    <Route path="/auth" element={<AuthPage redirectAfterAuth="/dashboard" />} />
+                    <Route path="/dashboard" element={<RequireAuth><Dashboard /></RequireAuth>} />
+                    <Route path="/partner" element={<RequireAuth><Partner /></RequireAuth>} />
+                    <Route path="/admin" element={<RequireAuth><Admin /></RequireAuth>} />
+                    <Route path="*" element={<Public><NotFound /></Public>} />
+                  </>
+                )}
               </Routes>
             </Suspense>
             <ScrollToTop />
             <AiAssistant />
             <OnboardingGate />
-          </BrowserRouter>
-        </CurrencyProvider>
+        </BrowserRouter>
       </LangProvider>
       <Toaster />
     </RootErrorBoundary>

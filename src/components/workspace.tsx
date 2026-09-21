@@ -17,7 +17,7 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import { MillytourLogo, PatternOverlay } from "@/components/brand";
+import { MillytourLogo } from "@/components/brand";
 import { useAuth } from "@/hooks/use-auth";
 import { cn } from "@/lib/utils";
 
@@ -64,7 +64,7 @@ export function PanelShell({
     cn(
       "group flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-colors",
       isActive
-        ? "bg-primary/8 text-primary"
+        ? "bg-primary/10 text-primary"
         : "text-muted-foreground hover:bg-muted hover:text-foreground",
     );
 
@@ -160,8 +160,7 @@ export function PanelShell({
         <aside className="hidden w-64 shrink-0 lg:block">
           <div className="sticky top-24 flex flex-col gap-4">
             <div className="rounded-2xl border bg-card p-3">{navList}</div>
-            <div className="relative overflow-hidden rounded-2xl bg-[#17231d] p-4 text-white">
-              <PatternOverlay tone="gold" opacityClass="opacity-[0.08]" />
+            <div className="relative overflow-hidden rounded-2xl bg-ink p-4 text-white">
               <div className="relative">
                 <p className="inline-flex items-center gap-1.5 text-xs font-semibold text-white">
                   <BadgeCheck className="size-3.5 text-gold" aria-hidden="true" />
@@ -213,8 +212,8 @@ export function StatCard({
   tone?: "primary" | "gold" | "eco";
 }) {
   const toneCls = {
-    primary: "bg-primary/8 text-primary",
-    gold: "bg-gold/15 text-[#8a5a00]",
+    primary: "bg-primary/10 text-primary",
+    gold: "bg-gold/15 text-gold-ink",
     eco: "bg-eco/15 text-eco",
   }[tone];
 
@@ -266,23 +265,23 @@ export function PanelCard({
 }
 
 const STATUS_STYLES: Record<string, string> = {
-  new: "bg-gold/20 text-[#8a5a00]",
+  new: "bg-gold/20 text-gold-ink",
   confirmed: "bg-eco/15 text-eco",
   completed: "bg-eco/15 text-eco",
   cancelled: "bg-destructive/10 text-destructive",
-  pending: "bg-gold/20 text-[#8a5a00]",
+  pending: "bg-gold/20 text-gold-ink",
   approved: "bg-eco/15 text-eco",
   rejected: "bg-destructive/10 text-destructive",
   paused: "bg-muted text-muted-foreground",
-  trial: "bg-gold/20 text-[#8a5a00]",
+  trial: "bg-gold/20 text-gold-ink",
   active: "bg-eco/15 text-eco",
   overdue: "bg-destructive/10 text-destructive",
   paid: "bg-eco/15 text-eco",
-  unpaid: "bg-gold/20 text-[#8a5a00]",
+  unpaid: "bg-gold/20 text-gold-ink",
   refunded: "bg-muted text-muted-foreground",
   failed: "bg-destructive/10 text-destructive",
-  assigned: "bg-gold/20 text-[#8a5a00]",
-  notified: "bg-gold/20 text-[#8a5a00]",
+  assigned: "bg-gold/20 text-gold-ink",
+  notified: "bg-gold/20 text-gold-ink",
   accepted: "bg-eco/15 text-eco",
   declined: "bg-destructive/10 text-destructive",
   done: "bg-eco/15 text-eco",
